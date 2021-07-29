@@ -12,6 +12,9 @@
     }
   ],
   "license": "BSD-2-Clause",
+  "exports": {
+    "./": "./src/ava.mjs"
+  },
   "scripts": {
     "cover": "--overwrite-- c8 -x 'tests/**/*' --temp-directory build/tmp ava --timeout 2m tests/*.mjs && c8 report -r lcov -o build/coverage --temp-directory build/tmp",
     "test": "npm run test:ava",
