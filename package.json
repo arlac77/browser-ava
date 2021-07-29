@@ -1,0 +1,42 @@
+{
+  "name": "browser-ava",
+  "version": "0.0.0-semantic-release",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "run ava test in the browser",
+  "contributors": [
+    {
+      "name": "Markus Felten",
+      "email": "markus.felten@gmx.de"
+    }
+  ],
+  "license": "BSD-2-Clause",
+  "scripts": {
+    "cover": "--overwrite-- c8 -x 'tests/**/*' --temp-directory build/tmp ava --timeout 2m tests/*.mjs && c8 report -r lcov -o build/coverage --temp-directory build/tmp",
+    "test": "npm run test:ava",
+    "test:ava": "ava --timeout 2m tests/*.mjs"
+  },
+  "devDependencies": {
+    "semantic-release": "^17.4.4",
+    "c8": "^7.8.0",
+    "ava": "^3.15.0"
+  },
+  "engines": {
+    "node": ">=14.17.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arlac77/browser-ava.git"
+  },
+  "bugs": {
+    "url": "https://github.com/arlac77/browser-ava/issues"
+  },
+  "homepage": "https://github.com/arlac77/browser-ava#readme",
+  "template": {
+    "inheritFrom": [
+      "arlac77/template-arlac77-github",
+      "arlac77/template-node-app"
+    ]
+  }
+}
