@@ -5,7 +5,7 @@
     "access": "public"
   },
   "bin": {
-    "browser-ava" : ".src/browser-ava-cli.mjs"
+    "browser-ava": ".src/browser-ava-cli.mjs"
   },
   "exports": {
     "./": "./src/ava.mjs"
@@ -46,6 +46,7 @@
     ]
   },
   "dependencies": {
+    "@web/dev-server-core": "^0.3.13",
     "playwright": "^1.13.1"
   }
 }
