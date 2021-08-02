@@ -4,6 +4,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "bin": {
+    "browser-ava" : ".src/browser-ava-cli.mjs"
+  },
   "exports": {
     "./": "./src/ava.mjs"
   },
@@ -41,5 +44,8 @@
       "arlac77/template-arlac77-github",
       "arlac77/template-node-app"
     ]
+  },
+  "dependencies": {
+    "playwright": "^1.13.1"
   }
 }
