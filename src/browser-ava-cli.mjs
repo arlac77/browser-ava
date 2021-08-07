@@ -2,6 +2,7 @@
 
 import { chromium, firefox, webkit } from 'playwright';
 import { DevServer } from "@web/dev-server-core";
+import { createWriteStream } from "fs";
 
 let port = 8080;
 let headless = true;
@@ -25,6 +26,25 @@ const server = new DevServer(
 );
 
 server.start();
+
+const f = createWriteStream("index.html",{ encoding: "utf8"});
+f.end(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="importmap">
+        {
+          "imports": {
+            "ava": "./ava.mjs",
+            "content-entry": "../../src/index.mjs"
+          }
+        }
+    </script>
+    <script type="module" src="web-test.mjs">
+    </script>
+</head>
+<body>
+</body>
+</html>`);
 
 async function run() {
   const browser = await chromium.launch({ headless });
