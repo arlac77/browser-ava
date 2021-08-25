@@ -24,7 +24,7 @@
     "cover": "c8 -x 'tests/**/*' --temp-directory build/tmp ava --timeout 2m tests/*.mjs && c8 report -r lcov -o build/coverage --temp-directory build/tmp"
   },
   "dependencies": {
-    "@web/dev-server-core": "^0.3.13",
+    "@web/dev-server-core": "^0.3.14",
     "playwright": "^1.14.1"
   },
   "devDependencies": {
