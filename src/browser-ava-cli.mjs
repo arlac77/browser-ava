@@ -1,11 +1,11 @@
-#!/usr/bin/node
+#!/usr/bin/env node
 
-import { chromium, firefox, webkit } from 'playwright';
+import { chromium } from 'playwright';
 import { DevServer } from "@web/dev-server-core";
 import { createWriteStream } from "fs";
 
 let port = 8080;
-let headless = true;
+let headless = false;
 
 const server = new DevServer(
   {
@@ -27,10 +27,11 @@ const server = new DevServer(
 
 server.start();
 
-const f = createWriteStream("index.html",{ encoding: "utf8"});
+const f = createWriteStream("index.html", { encoding: "utf8" });
 f.end(`<!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>test</title>
     <script type="importmap">
         {
           "imports": {
@@ -51,7 +52,7 @@ async function run() {
 
   console.log(browser);
   const page = await browser.newPage();
-  const x = await page.goto(`http://localhost:${port}/tests/index.html`);
+  const x = await page.goto(`http://localhost:${port}/index.html`);
   console.log(x);
   //   await browser.close();
 }
