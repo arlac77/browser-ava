@@ -28,3 +28,5 @@ openapi:
   - openapi/*
 labels:
   - .github/pr_labeler.yml
+styling:
+  - '**/*.css'
