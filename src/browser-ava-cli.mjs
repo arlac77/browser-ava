@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { chromium } from 'playwright';
+import { chromium } from "playwright";
 import { DevServer } from "@web/dev-server-core";
 import { createWriteStream } from "fs";
 
@@ -12,7 +12,7 @@ const server = new DevServer(
     port,
     rootDir: process.cwd(),
     plugins: [],
-    middleware: [],
+    middleware: []
   },
   {
     log: console.log,
@@ -21,8 +21,8 @@ const server = new DevServer(
     warn: console.warn,
     logSyntaxError(error) {
       console.error(error.message);
-    },
-  },
+    }
+  }
 );
 
 server.start();
@@ -57,6 +57,4 @@ async function run() {
   //   await browser.close();
 }
 
-
 run();
-
