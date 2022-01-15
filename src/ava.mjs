@@ -1,3 +1,4 @@
+
 export default async function test(name, body) {
   let assertions = [];
 
@@ -15,4 +16,7 @@ export default async function test(name, body) {
   await body(t);
 
   console.log(assertions);
+}
+
+function addResult() {
 }

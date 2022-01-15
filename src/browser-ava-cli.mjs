@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+import { createReadStream } from "fs";
 import { chromium } from "playwright";
 import Koa from "koa";
 import Router from "koa-better-router";
@@ -33,17 +33,25 @@ async function createServer() {
 </head>
 <body>
 <h3>AVA test runner</h3>
+<div id="tests">
+</div>
 </body>
 </html>`;
 
     return next();
   });
 
-  router.addRoute("GET", "/web-test.mjs", (ctx, next) => {
+  const esm = (ctx, next) => {
+    console.log(ctx.request.path);
     ctx.response.type = "application/javascript";
-    ctx.body = 'console.log("web-test.mjs");';
+    ctx.body = createReadStream(
+      new URL("." + ctx.request.path, import.meta.url).pathname
+    );
     return next();
-  });
+  };
+
+  router.addRoute("GET", "web-test.mjs", esm);
+  router.addRoute("GET", "ava.mjs", esm);
 
   app.use(router.middleware());
 
