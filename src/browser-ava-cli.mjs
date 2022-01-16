@@ -5,10 +5,13 @@ import Koa from "koa";
 import Router from "koa-better-router";
 import program from "commander";
 
+const utf8EncodingOptions = { encoding: "utf8" };
+
 const { version, description } = JSON.parse(
-  readFileSync(new URL("../package.json", import.meta.url).pathname, {
-    encoding: "utf8"
-  })
+  readFileSync(
+    new URL("../package.json", import.meta.url).pathname,
+    utf8EncodingOptions
+  )
 );
 
 let headless = false;
@@ -16,25 +19,31 @@ let headless = false;
 program
   .description(description)
   .version(version)
-  .argument('<tests...>')
+  .argument("<tests...>")
   .action(async (tests, options) => {
     const { server, port } = await createServer(tests);
-  
+
     const browser = await chromium.launch({ headless });
     const page = await browser.newPage();
     await page.goto(`http://localhost:${port}/index.html`);
-
   });
 
 program.parse(process.argv);
 
 async function createServer(testFiles) {
+  const pkg = JSON.parse(
+    await readFileSync("package.json", utf8EncodingOptions)
+  );
+
   const importmap = {
     imports: {
-      ava: "./ava.mjs",
-      "content-entry": "../../src/index.mjs"
+      ava: "./ava.mjs"
     }
   };
+
+  if (pkg.exports) {
+    importmap.imports[pkg.name] = pkg.exports.browser || pkg.exports;
+  }
 
   let port = 8080;
 
@@ -65,13 +74,15 @@ async function createServer(testFiles) {
     return next();
   });
 
+  app.on("error", err => {
+    console.error("server error", err);
+  });
+
   const esm = (ctx, next) => {
-    //console.log(ctx.request.path);
     ctx.response.type = "text/javascript";
     ctx.body = createReadStream(
       new URL("." + ctx.request.path, import.meta.url).pathname
     );
-    return next();
   };
 
   for (const e of ["web-test.mjs", "ava.mjs"]) {
@@ -79,10 +90,8 @@ async function createServer(testFiles) {
   }
 
   const tf = (ctx, next) => {
-    console.log(ctx.request.path);
     ctx.response.type = "text/javascript";
     ctx.body = createReadStream("." + ctx.request.path);
-    return next();
   };
 
   for (const t of testFiles) {
@@ -90,6 +99,16 @@ async function createServer(testFiles) {
   }
 
   app.use(router.middleware());
+
+  app.use(async (ctx, next) => {
+    if (!ctx.response.type) {
+      if (ctx.request.path.endsWith(".mjs")) {
+        ctx.response.type = "text/javascript";
+        ctx.body = createReadStream("." + ctx.request.path);
+      }
+    }
+    await next();
+  });
 
   const server = await new Promise((resolve, reject) => {
     const server = app.listen(port, error => {
