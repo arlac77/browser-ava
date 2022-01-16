@@ -1,26 +1,26 @@
-
 export default async function test(name, body) {
   let assertions = [];
 
   const t = {
-    is(a,b) {
+    is(a, b, message=name) {
       assertions.push({});
-      if (a !== b) console.log(`${name}: ${a} != ${b}`);
+      if (a !== b) console.log(`${message}: ${a} != ${b}`);
     },
-    true(value) {
+    true(value, message=name) {
       assertions.push({});
-      if (value !== true) console.log(`${name}: ${value}`);
+      if (value !== true) console.log(`${message}: ${value}`);
     },
-    false(value) {
+    false(value, message=name) {
       assertions.push({});
-      if (value !== false) console.log(`${name}: ${value}`);
+      if (value !== false) console.log(`${message}: ${value}`);
     }
   };
 
   await body(t);
 
-  console.log(assertions);
+  //console.log(assertions);
 }
 
-function addResult() {
-}
+test.skip = () => {}
+
+function addResult() {}

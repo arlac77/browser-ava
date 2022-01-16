@@ -1,10 +1,32 @@
 #!/usr/bin/env node
-import { createReadStream } from "fs";
+import { createReadStream, readFileSync } from "fs";
 import { chromium } from "playwright";
 import Koa from "koa";
 import Router from "koa-better-router";
+import program from "commander";
+
+const { version, description } = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url).pathname, {
+    encoding: "utf8"
+  })
+);
 
 let headless = false;
+
+program
+  .description(description)
+  .version(version)
+  .argument('<tests...>')
+  .action(async (tests, options) => {
+    const { server, port } = await createServer(tests);
+  
+    const browser = await chromium.launch({ headless });
+    const page = await browser.newPage();
+    await page.goto(`http://localhost:${port}/index.html`);
+
+  });
+
+program.parse(process.argv);
 
 async function createServer(testFiles) {
   const importmap = {
@@ -84,15 +106,3 @@ async function createServer(testFiles) {
     port
   };
 }
-
-async function run() {
-  const { server, port } = await createServer([
-    "tests/fixtures/tests/simple-test.mjs"
-  ]);
-
-  const browser = await chromium.launch({ headless });
-  const page = await browser.newPage();
-  await page.goto(`http://localhost:${port}/index.html`);
-}
-
-run();
