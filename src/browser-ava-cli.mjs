@@ -6,7 +6,7 @@ import Router from "koa-better-router";
 
 let headless = false;
 
-async function createServer() {
+async function createServer(testFiles) {
   const importmap = {
     imports: {
       ava: "./ava.mjs",
@@ -28,8 +28,10 @@ async function createServer() {
     <script type="importmap">
     ${JSON.stringify(importmap)}
     </script>
-    <script type="module" src="web-test.mjs">
-    </script>
+    <script type="module" src="web-test.mjs"></script>
+    ${testFiles
+      .map(f => `<script type="module" src="${f}"></script>`)
+      .join("\n")}
 </head>
 <body>
 <h3>AVA test runner</h3>
@@ -42,16 +44,28 @@ async function createServer() {
   });
 
   const esm = (ctx, next) => {
-    console.log(ctx.request.path);
-    ctx.response.type = "application/javascript";
+    //console.log(ctx.request.path);
+    ctx.response.type = "text/javascript";
     ctx.body = createReadStream(
       new URL("." + ctx.request.path, import.meta.url).pathname
     );
     return next();
   };
 
-  router.addRoute("GET", "web-test.mjs", esm);
-  router.addRoute("GET", "ava.mjs", esm);
+  for (const e of ["web-test.mjs", "ava.mjs"]) {
+    router.addRoute("GET", e, esm);
+  }
+
+  const tf = (ctx, next) => {
+    console.log(ctx.request.path);
+    ctx.response.type = "text/javascript";
+    ctx.body = createReadStream("." + ctx.request.path);
+    return next();
+  };
+
+  for (const t of testFiles) {
+    router.addRoute("GET", t, tf);
+  }
 
   app.use(router.middleware());
 
@@ -66,15 +80,15 @@ async function createServer() {
   });
 
   return {
-    app,
     server,
-    router,
     port
   };
 }
 
 async function run() {
-  const { server, port } = await createServer();
+  const { server, port } = await createServer([
+    "tests/fixtures/tests/simple-test.mjs"
+  ]);
 
   const browser = await chromium.launch({ headless });
   const page = await browser.newPage();

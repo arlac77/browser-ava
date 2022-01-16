@@ -3,6 +3,10 @@ export default async function test(name, body) {
   let assertions = [];
 
   const t = {
+    is(a,b) {
+      assertions.push({});
+      if (a !== b) console.log(`${name}: ${a} != ${b}`);
+    },
     true(value) {
       assertions.push({});
       if (value !== true) console.log(`${name}: ${value}`);
