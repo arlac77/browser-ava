@@ -89,6 +89,11 @@ async function createServer(testFiles) {
     router.addRoute("GET", e, esm);
   }
 
+  router.addRoute("GET", "test-files.json", (ctx, next) => {
+    ctx.response.type = "application/json";
+    ctx.body = testFiles;
+  });
+
   const tf = (ctx, next) => {
     ctx.response.type = "text/javascript";
     ctx.body = createReadStream("." + ctx.request.path);

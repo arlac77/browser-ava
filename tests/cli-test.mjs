@@ -1,10 +1,13 @@
 import test from "ava";
-import { execa}  from "execa";
+import { execa } from "execa";
 
 test("cli simple", async t => {
   const p = await execa(
     "node",
-    [new URL("../src/browser-ava-cli.mjs", import.meta.url).pathname],
+    [
+      new URL("../src/browser-ava-cli.mjs", import.meta.url).pathname,
+      "tests/fixtures/tests/simple-test.mjs"
+    ],
     { all: true }
   );
 
