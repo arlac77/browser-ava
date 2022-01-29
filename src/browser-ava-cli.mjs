@@ -3,7 +3,7 @@ import { createReadStream, readFileSync } from "fs";
 import { chromium } from "playwright";
 import Koa from "koa";
 import Router from "koa-better-router";
-import program from "commander";
+import { program } from "commander";
 
 const utf8EncodingOptions = { encoding: "utf8" };
 
