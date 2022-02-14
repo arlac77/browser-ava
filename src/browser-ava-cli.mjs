@@ -109,6 +109,9 @@ async function createServer(testFiles) {
     if (!ctx.response.type) {
       if (ctx.request.path.endsWith(".mjs")) {
         ctx.response.type = "text/javascript";
+
+        // use 'es-module-lexer' to rewrite imports
+
         ctx.body = createReadStream("." + ctx.request.path);
       }
     }
