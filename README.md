@@ -7,3 +7,5 @@
 [![Coverage Status](https://coveralls.io/repos/arlac77/browser-ava/badge.svg)](https://coveralls.io/github/arlac77/browser-ava)
 # browser-ava
 Run ava tests in the browser
+
+# API
