@@ -24,7 +24,7 @@
     "cover": "c8 -x 'tests/**/*' --temp-directory build/tmp ava --timeout 2m tests/*.mjs && c8 report -r lcov -o build/coverage --temp-directory build/tmp"
   },
   "dependencies": {
-    "commander": "^9.3.0",
+    "commander": "^9.4.0",
     "koa": "^2.13.4",
     "koa-better-router": "^2.1.1",
     "playwright": "^1.23.3"
