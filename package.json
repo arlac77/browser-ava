@@ -27,7 +27,7 @@
     "commander": "^9.4.0",
     "koa": "^2.13.4",
     "koa-better-router": "^2.1.1",
-    "playwright": "^1.24.1"
+    "playwright": "^1.24.2"
   },
   "devDependencies": {
     "ava": "^4.3.1",
