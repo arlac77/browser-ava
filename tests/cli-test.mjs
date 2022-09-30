@@ -6,7 +6,7 @@ test("cli simple", async t => {
     "node",
     [
       new URL("../src/browser-ava-cli.mjs", import.meta.url).pathname,
-      "tests/fixtures/tests/simple-test.mjs"
+      "tests/fixtures/tests/first-test.mjs"
     ],
     { all: true }
   );

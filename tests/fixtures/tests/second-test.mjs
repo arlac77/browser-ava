@@ -1,9 +1,9 @@
 import test from "ava";
 
-test("t1", t => {
+test("t3", t => {
   t.is(1, 1, "assert title 1");
 });
 
-test("t2", t => {
+test("t4", t => {
   t.is(1, 2, "assert title 2");
 });

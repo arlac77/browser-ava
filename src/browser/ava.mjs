@@ -1,4 +1,3 @@
-
 /**
  * Holds all tests
  */
@@ -19,24 +18,26 @@ export function textContext(def) {
   const assertions = def.assertions;
 
   return {
-    throws(a, message = name) {},
-    deepEqual(a, b, message = name) {
-      assertions.push({});
-      if (a !== b)
-        console.log(`${message}: ${JSON.stringify(a)} != ${JSON.stringify(b)}`);
+    throws(a, name) {},
+    deepEqual(a, b, name) {
+      assertions.push({ ok: a === b, message, name });
     },
-    is(a, b, message = name) {
-      assertions.push({});
-      if (a !== b)
-        console.log(`${message}: ${JSON.stringify(a)} != ${JSON.stringify(b)}`);
+    is(a, b, name) {
+      assertions.push({ ok: a === b, message: `${a} != ${b}`, name });
     },
-    true(value, message = name) {
-      assertions.push({});
-      if (value !== true) console.log(`${message}: ${value}`);
+    true(value, name) {
+      assertions.push({
+        ok: value === true,
+        message: `${value} != true`,
+        name
+      });
     },
-    false(value, message = name) {
-      assertions.push({});
-      if (value !== false) console.log(`${message}: ${value}`);
+    false(value, name) {
+      assertions.push({
+        ok: value === true,
+        message: `${value} != false`,
+        name
+      });
     }
   };
 }

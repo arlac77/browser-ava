@@ -4,25 +4,34 @@ async function loadTests() {
   const response = await fetch("test-files.json");
 
   for (const file of await response.json()) {
-    const current = { file, tests: [] };
-
-    world.files[file] = current;
-    world.current = current;
-
+    world.current = world.files[file] = { file, tests: [] };
     await import(new URL(file, import.meta.url));
   }
 }
 
 async function displayTests() {
   const run = document.getElementById("run");
-  run.onclick = runTests;
+  run.onclick = async () => {
+    await runTests();
+    displayTests();
+  };
 
   const tests = document.getElementById("tests");
 
   function slot(f, def) {
     return (
       `<li id="${f}">${f}<ul>` +
-      def.tests.map(t => `<li>${t.name}</li>`).join("\n") +
+      def.tests
+        .map(
+          t =>
+            `<li>${t.name} <span>${
+              t.ok === true ? "green" : t.ok === false ? "red" : "?"
+            } ${t.assertions
+              .filter(a => !a.ok)
+              .map(a => a.name + " " + a.message)
+              .join(" ")}</span></li>`
+        )
+        .join("\n") +
       "</ul></li>"
     );
   }
@@ -38,9 +47,14 @@ async function displayTests() {
 async function runTests() {
   for (const [file, def] of Object.entries(world.files)) {
     for (const test of def.tests) {
-      console.log("run", file, test.name);
       const t = textContext(test);
-      await test.body(t);
+
+      try {
+        await test.body(t);
+        test.ok = !test.assertions.find(a => a.ok !== true);
+      } catch (e) {
+        test.ok = false;
+      }
     }
   }
 }
