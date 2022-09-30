@@ -37,7 +37,8 @@ async function createServer(testFiles) {
 
   const importmap = {
     imports: {
-      ava: "./src/browser/ava.mjs"
+      ava: "./src/browser/ava.mjs",
+    //  runtime: "./src/browser/runtime.mjs"
     }
   };
 
@@ -55,7 +56,7 @@ async function createServer(testFiles) {
     <script type="importmap">
     ${JSON.stringify(importmap)}
     </script>
-    <script type="module" src="web-test.mjs"></script>
+    <script type="module" src="runtime.mjs"></script>
 </head>
 <body>
 <h3>AVA test runner</h3>
@@ -79,7 +80,7 @@ async function createServer(testFiles) {
     );
   };
 
-  for (const e of ["web-test.mjs", "ava.mjs"]) {
+  for (const e of ["runtime.mjs", "ava.mjs"]) {
     router.addRoute("GET", e, esm);
   }
 
