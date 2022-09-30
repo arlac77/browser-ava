@@ -65,7 +65,7 @@ loadTests().then(() => displayTests());
 
 function testContext(def) {
   const name = def.name;
-  const assertions = def.assertions;
+  const assertions = def.assertions = [];
 
   return {
     throws(a, name) {},
@@ -73,7 +73,7 @@ function testContext(def) {
       assertions.push({ ok: a === b, message, name });
     },
     is(a, b, name) {
-      assertions.push({ ok: a === b, message: `${a} != ${b}`, name });
+      assertions.push({ ok: Object.is(a, b), message: `${a} != ${b}`, name });
     },
     true(value, name) {
       assertions.push({
