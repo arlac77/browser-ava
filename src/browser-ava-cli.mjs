@@ -41,10 +41,6 @@ async function createServer(testFiles) {
     }
   };
 
-  if (pkg.exports) {
-    importmap.imports[pkg.name] = pkg.exports.browser || pkg.exports;
-  }
-
   let port = 8080;
 
   const app = new Koa();
