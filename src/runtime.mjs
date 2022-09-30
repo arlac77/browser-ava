@@ -1,4 +1,4 @@
-import { world, textContext } from "ava";
+import { world } from "ava";
 
 async function loadTests() {
   const response = await fetch("tests.json");
@@ -47,16 +47,47 @@ async function displayTests() {
 async function runTests() {
   for (const [file, def] of Object.entries(world.files)) {
     for (const test of def.tests) {
-      const t = textContext(test);
+      if (!test.skip) {
+        const t = testContext(test);
 
-      try {
-        await test.body(t);
-        test.ok = !test.assertions.find(a => a.ok !== true);
-      } catch (e) {
-        test.ok = false;
+        try {
+          await test.body(t);
+          test.ok = !test.assertions.find(a => a.ok !== true);
+        } catch (e) {
+          test.ok = false;
+        }
       }
     }
   }
 }
 
 loadTests().then(() => displayTests());
+
+function testContext(def) {
+  const name = def.name;
+  const assertions = def.assertions;
+
+  return {
+    throws(a, name) {},
+    deepEqual(a, b, name) {
+      assertions.push({ ok: a === b, message, name });
+    },
+    is(a, b, name) {
+      assertions.push({ ok: a === b, message: `${a} != ${b}`, name });
+    },
+    true(value, name) {
+      assertions.push({
+        ok: value === true,
+        message: `${value} != true`,
+        name
+      });
+    },
+    false(value, name) {
+      assertions.push({
+        ok: value === true,
+        message: `${value} != false`,
+        name
+      });
+    }
+  };
+}
