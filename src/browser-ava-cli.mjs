@@ -15,6 +15,7 @@ const { version, description } = JSON.parse(
 );
 
 let headless = false;
+let keepOpen = true;
 
 program
   .description(description)
@@ -26,6 +27,14 @@ program
     const browser = await chromium.launch({ headless });
     const page = await browser.newPage();
     await page.goto(`http://localhost:${port}/index.html`);
+
+    const run = page.locator("#run");
+    await run.click();
+
+    if (!keepOpen) {
+      await browser.close();
+      server.close();
+    }
   });
 
 program.parse(process.argv);
@@ -37,8 +46,8 @@ async function createServer(tests) {
 
   const importmap = {
     imports: {
-      ava: "./src/browser/ava.mjs",
-    //  runtime: "./src/browser/runtime.mjs"
+      ava: "./src/browser/ava.mjs"
+      //  runtime: "./src/browser/runtime.mjs"
     }
   };
 
