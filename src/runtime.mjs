@@ -1,7 +1,7 @@
 import { world, textContext } from "ava";
 
 async function loadTests() {
-  const response = await fetch("test-files.json");
+  const response = await fetch("tests.json");
 
   for (const file of await response.json()) {
     world.current = world.files[file] = { file, tests: [] };

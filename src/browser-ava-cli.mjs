@@ -30,7 +30,7 @@ program
 
 program.parse(process.argv);
 
-async function createServer(testFiles) {
+async function createServer(tests) {
   const pkg = JSON.parse(
     await readFileSync("package.json", utf8EncodingOptions)
   );
@@ -84,9 +84,9 @@ async function createServer(testFiles) {
     router.addRoute("GET", e, esm);
   }
 
-  router.addRoute("GET", "test-files.json", (ctx, next) => {
+  router.addRoute("GET", "tests.json", (ctx, next) => {
     ctx.response.type = "application/json";
-    ctx.body = testFiles;
+    ctx.body = tests;
   });
 
   const tf = (ctx, next) => {
@@ -94,7 +94,7 @@ async function createServer(testFiles) {
     ctx.body = createReadStream("." + ctx.request.path);
   };
 
-  for (const t of testFiles) {
+  for (const t of tests) {
     router.addRoute("GET", t, tf);
   }
 
