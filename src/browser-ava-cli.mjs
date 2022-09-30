@@ -37,7 +37,7 @@ async function createServer(testFiles) {
 
   const importmap = {
     imports: {
-      ava: "./ava.mjs"
+      ava: "./src/browser/ava.mjs"
     }
   };
 
@@ -56,12 +56,10 @@ async function createServer(testFiles) {
     ${JSON.stringify(importmap)}
     </script>
     <script type="module" src="web-test.mjs"></script>
-    ${testFiles
-      .map(f => `<script type="module" src="${f}"></script>`)
-      .join("\n")}
 </head>
 <body>
 <h3>AVA test runner</h3>
+<button id="run">run</button>
 <div id="tests">
 </div>
 </body>
