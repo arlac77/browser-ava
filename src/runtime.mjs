@@ -51,7 +51,7 @@ async function runTests() {
         const t = testContext(test);
 
         try {
-          await test.body(t);
+          await test.body(t, ...test.args);
           test.ok = !test.assertions.find(a => a.ok !== true);
         } catch (e) {
           test.ok = false;
@@ -65,7 +65,7 @@ loadTests().then(() => displayTests());
 
 function testContext(def) {
   const name = def.name;
-  const assertions = def.assertions = [];
+  const assertions = (def.assertions = []);
 
   return {
     throws(a, name) {},
@@ -84,7 +84,7 @@ function testContext(def) {
     },
     false(value, name) {
       assertions.push({
-        ok: value === true,
+        ok: value === false,
         message: `${value} != false`,
         name
       });
