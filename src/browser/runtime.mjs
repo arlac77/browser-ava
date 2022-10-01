@@ -19,10 +19,14 @@ async function displayTests() {
   function renderTest(t) {
     return `<li class="${
       t.passed === true ? "passed" : t.passed === false ? "failed" : ""
-    }">${t.name} <span>${t.assertions
-      .filter(a => !a.passed)
-      .map(a => a.name + " " + a.message)
-      .join(" ")}</span></li>`;
+    }">${t.title} <span>${
+      t.assertions
+        ? t.assertions
+            .filter(a => !a.passed)
+            .map(a => a.title + " " + a.message)
+            .join(" ")
+        : ""
+    }</span></li>`;
   }
 
   function renderFile(f, def) {
@@ -61,33 +65,43 @@ async function runTests() {
 loadTests().then(() => displayTests());
 
 function testContext(def) {
-  const name = def.name;
-  const assertions = (def.assertions = []);
-
+  const title = def.title;
+  def.assertions = [];
+  
   return {
-    throws(a, name) {},
-    deepEqual(a, b, name) {
-      assertions.push({ passed: a === b, message, name });
+    title,
+    context: {},
+    log(...args) {},
+    plan(count) {},
+    teardown(fn) {},
+    timeout(ms) {},
+
+    
+    // assertions
+
+    throws(a, title) {},
+    deepEqual(a, b, title) {
+      def.assertions.push({ passed: a === b, message, title });
     },
-    is(a, b, name) {
-      assertions.push({
+    is(a, b, title) {
+      def.assertions.push({
         passed: Object.is(a, b),
         message: `${a} != ${b}`,
-        name
+        title
       });
     },
-    true(value, name) {
-      assertions.push({
+    true(value, title) {
+      def.assertions.push({
         passed: value === true,
         message: `${value} != true`,
-        name
+        title
       });
     },
-    false(value, name) {
-      assertions.push({
+    false(value, title) {
+      def.assertions.push({
         passed: value === false,
         message: `${value} != false`,
-        name
+        title
       });
     }
   };
