@@ -3,6 +3,7 @@ import { createReadStream, readFileSync } from "node:fs";
 import { chromium } from "playwright";
 import Koa from "koa";
 import Router from "koa-better-router";
+import Static from "koa-static";
 import { program } from "commander";
 
 const utf8EncodingOptions = { encoding: "utf8" };
@@ -17,9 +18,13 @@ const { version, description } = JSON.parse(
 program
   .description(description)
   .version(version)
-  .option('--port <number>', 'server port to use', 8080)
-  .option('--headless', 'hide browser window')
-  .option('--no-keep-open', 'keep browser-ava and the page open after execution', true)
+  .option("--port <number>", "server port to use", 8080)
+  .option("--headless", "hide browser window", false)
+  .option(
+    "--no-keep-open",
+    "keep browser-ava and the page open after execution",
+    true
+  )
   .argument("<tests...>")
   .action(async (tests, options) => {
     const { server, port } = await createServer(tests, options);
@@ -39,40 +44,13 @@ program
 
 program.parse(process.argv);
 
-async function createServer(tests,options) {
-  const importmap = {
-    imports: {
-      ava: "./src/browser/ava.mjs"
-      //  runtime: "./src/browser/runtime.mjs"
-    }
-  };
-
+async function createServer(tests, options) {
   let port = options.port;
 
   const app = new Koa();
   const router = Router();
 
-  router.addRoute("GET", "index.html", (ctx, next) => {
-    ctx.response.type = "text/html";
-    ctx.body = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>AVA test runner</title>
-    <script type="importmap">
-    ${JSON.stringify(importmap)}
-    </script>
-    <script type="module" src="runtime.mjs"></script>
-</head>
-<body>
-<h3>AVA test runner</h3>
-<button id="run">run</button>
-<div id="tests">
-</div>
-</body>
-</html>`;
-
-    return next();
-  });
+  app.use(Static(new URL("./browser", import.meta.url).pathname));
 
   app.on("error", err => {
     console.error("server error", err);
@@ -85,7 +63,7 @@ async function createServer(tests,options) {
     );
   };
 
-  for (const e of ["runtime.mjs", "ava.mjs"]) {
+  for (const e of ["runtime.mjs"]) {
     router.addRoute("GET", e, esm);
   }
 
