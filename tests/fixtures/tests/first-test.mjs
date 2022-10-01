@@ -10,6 +10,11 @@ test("test.2", t => {
 });
 
 test("test.empty", t => {});
+test("test.plan", t => {
+  t.plan(2);
+  t.true(1 === 1);
+});
+
 test("test.pass", t => {
   t.pass();
 });

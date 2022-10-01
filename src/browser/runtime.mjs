@@ -26,7 +26,7 @@ async function displayTests() {
             .map(a => a.title + " " + a.message)
             .join(" ")
         : ""
-    }</span></li>`;
+    }</span>${t.message ? t.message : ""}</li>`;
   }
 
   function renderFile(f, def) {
@@ -56,9 +56,15 @@ async function runTest(test) {
         test.passed = false;
       } else {
         test.passed = !test.assertions.find(a => a.passed !== true);
+
+        if (t.planned !== undefined && t.planned !== test.assertions.length) {
+          test.passed = false;
+          test.message = `Planned for ${t.planned} but got ${test.assertions.length} assertions`;
+        }
       }
     } catch (e) {
       test.passed = false;
+      test.message = e;
     }
   }
 }
@@ -72,7 +78,9 @@ async function runTests() {
       await runTest(test);
     }
 
-    await Promise.all(def.tests.filter(test => !test.serial).map(test => runTest(test)));
+    await Promise.all(
+      def.tests.filter(test => !test.serial).map(test => runTest(test))
+    );
   }
 }
 
@@ -83,11 +91,20 @@ function testContext(def) {
   def.assertions = [];
 
   return {
+    teardowns: [],
+    logs: [],
     title,
     context: {},
-    log(...args) {},
-    plan(count) {},
-    teardown(fn) {},
+
+    log(...args) {
+      this.logs.push(args);
+    },
+    plan(count) {
+      this.planned = count;
+    },
+    teardown(fn) {
+      this.teardowns.push(fn);
+    },
     timeout(ms) {},
 
     // assertions
