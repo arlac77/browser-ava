@@ -24,9 +24,9 @@ async function displayTests() {
       def.tests
         .map(
           t =>
-            `<li>${t.name} <span>${
-              t.ok === true ? "green" : t.ok === false ? "red" : "?"
-            } ${t.assertions
+            `<li class="${
+              t.ok === true ? "passed" : t.ok === false ? "failed" : ""
+            }">${t.name} <span>${t.assertions
               .filter(a => !a.ok)
               .map(a => a.name + " " + a.message)
               .join(" ")}</span></li>`
