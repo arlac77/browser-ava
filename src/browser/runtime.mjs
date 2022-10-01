@@ -48,7 +48,7 @@ async function displayTests() {
 async function runTests() {
   for (const [file, def] of Object.entries(world.files)) {
     for (const test of def.tests) {
-      if (!test.skip) {
+      if (!test.skip && !test.todo) {
         const t = testContext(test);
 
         try {
@@ -76,7 +76,7 @@ function testContext(def) {
     teardown(fn) {},
     timeout(ms) {},
 
-    
+
     // assertions
 
     throws(a, title) {},
