@@ -19,12 +19,11 @@ let headless = false;
 program
   .description(description)
   .version(version)
+  .option('--port <number>', 'server port to use', 8080)
   .option('--no-keep-open', 'keep browser-ava and the page open after execution', true)
   .argument("<tests...>")
   .action(async (tests, options) => {
-    console.log(options);
-    
-    const { server, port } = await createServer(tests);
+    const { server, port } = await createServer(tests, options);
 
     const browser = await chromium.launch({ headless });
     const page = await browser.newPage();
@@ -41,7 +40,7 @@ program
 
 program.parse(process.argv);
 
-async function createServer(tests) {
+async function createServer(tests,options) {
   const pkg = JSON.parse(
     await readFileSync("package.json", utf8EncodingOptions)
   );
@@ -53,7 +52,7 @@ async function createServer(tests) {
     }
   };
 
-  let port = 8080;
+  let port = options.port;
 
   const app = new Koa();
   const router = Router();
