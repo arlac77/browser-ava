@@ -7,6 +7,7 @@ test("cli simple", async t => {
     [
       new URL("../src/browser-ava-cli.mjs", import.meta.url).pathname,
       "--no-keep-open",
+      "--headless",
       "tests/fixtures/tests/first-test.mjs"
     ],
     { all: true }

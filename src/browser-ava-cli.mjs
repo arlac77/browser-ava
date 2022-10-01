@@ -14,18 +14,17 @@ const { version, description } = JSON.parse(
   )
 );
 
-let headless = false;
-
 program
   .description(description)
   .version(version)
   .option('--port <number>', 'server port to use', 8080)
+  .option('--headless', 'hide browser window')
   .option('--no-keep-open', 'keep browser-ava and the page open after execution', true)
   .argument("<tests...>")
   .action(async (tests, options) => {
     const { server, port } = await createServer(tests, options);
 
-    const browser = await chromium.launch({ headless });
+    const browser = await chromium.launch({ headless: options.headless });
     const page = await browser.newPage();
     await page.goto(`http://localhost:${port}/index.html`);
 
