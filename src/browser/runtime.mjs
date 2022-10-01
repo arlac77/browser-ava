@@ -25,9 +25,9 @@ async function displayTests() {
         .map(
           t =>
             `<li class="${
-              t.ok === true ? "passed" : t.ok === false ? "failed" : ""
+              t.passed === true ? "passed" : t.passed === false ? "failed" : ""
             }">${t.name} <span>${t.assertions
-              .filter(a => !a.ok)
+              .filter(a => !a.passed)
               .map(a => a.name + " " + a.message)
               .join(" ")}</span></li>`
         )
@@ -52,9 +52,9 @@ async function runTests() {
 
         try {
           await test.body(t, ...test.args);
-          test.ok = !test.assertions.find(a => a.ok !== true);
+          test.passed = !test.assertions.find(a => a.passed !== true);
         } catch (e) {
-          test.ok = false;
+          test.passed = false;
         }
       }
     }
@@ -70,21 +70,21 @@ function testContext(def) {
   return {
     throws(a, name) {},
     deepEqual(a, b, name) {
-      assertions.push({ ok: a === b, message, name });
+      assertions.push({ passed: a === b, message, name });
     },
     is(a, b, name) {
-      assertions.push({ ok: Object.is(a, b), message: `${a} != ${b}`, name });
+      assertions.push({ passed: Object.is(a, b), message: `${a} != ${b}`, name });
     },
     true(value, name) {
       assertions.push({
-        ok: value === true,
+        passed: value === true,
         message: `${value} != true`,
         name
       });
     },
     false(value, name) {
       assertions.push({
-        ok: value === false,
+        passed: value === false,
         message: `${value} != false`,
         name
       });
