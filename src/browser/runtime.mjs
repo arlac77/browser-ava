@@ -45,20 +45,34 @@ async function displayTests() {
     "</ul>";
 }
 
+async function runTest(test) {
+  if (!test.skip && !test.todo) {
+    const t = testContext(test);
+
+    try {
+      await test.body(t, ...test.args);
+
+      if (test.assertions.length === 0) {
+        test.passed = false;
+      } else {
+        test.passed = !test.assertions.find(a => a.passed !== true);
+      }
+    } catch (e) {
+      test.passed = false;
+    }
+  }
+}
+
+/**
+ * run serial tests before of all others
+ */
 async function runTests() {
   for (const [file, def] of Object.entries(world.files)) {
-    for (const test of def.tests) {
-      if (!test.skip && !test.todo) {
-        const t = testContext(test);
-
-        try {
-          await test.body(t, ...test.args);
-          test.passed = !test.assertions.find(a => a.passed !== true);
-        } catch (e) {
-          test.passed = false;
-        }
-      }
+    for (const test of def.tests.filter(test => test.serial)) {
+      await runTest(test);
     }
+
+    await Promise.all(def.tests.filter(test => !test.serial).map(test => runTest(test)));
   }
 }
 
@@ -67,7 +81,7 @@ loadTests().then(() => displayTests());
 function testContext(def) {
   const title = def.title;
   def.assertions = [];
-  
+
   return {
     title,
     context: {},
@@ -76,8 +90,13 @@ function testContext(def) {
     teardown(fn) {},
     timeout(ms) {},
 
-
     // assertions
+    pass(title) {
+      def.assertions.push({ passed: true, title });
+    },
+    fail(title) {
+      def.assertions.push({ passed: false, title });
+    },
 
     throws(a, title) {},
     deepEqual(a, b, title) {
