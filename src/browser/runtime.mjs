@@ -1,9 +1,8 @@
 import { world } from "ava";
 
 let ws = new WebSocket(`ws://${location.host}`);
-ws.onerror = error => {
-  console.log(error);
-};
+ws.onerror = console.error;
+
 
 ws.onmessage = async message => {
   const data = JSON.parse(message.data);
@@ -78,7 +77,7 @@ async function runTest(test) {
 }
 
 /**
- * run serial tests before of all others
+ * run serial tests before all others
  */
 async function runTests() {
   for (const f of world.files) {

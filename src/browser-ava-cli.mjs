@@ -42,10 +42,14 @@ program
             break;
           case "result":
             console.log(">result");
-            //console.log(JSON.stringify(data, undefined, 2));
+        //    console.log(JSON.stringify(data.data, undefined, 2));
+            const failed = data.data.find(f => f.tests.find(t => t.passed === false));
+            console.log(failed ? "failed" : "passed");
+
             if (!options.keepOpen) {
               await browser.close();
               server.close();
+              process.exit(failed ? 1 : 0);
             }
         }
       });
@@ -73,26 +77,17 @@ async function createServer(tests, options) {
     console.error("server error", err);
   });
 
-  const tf = (ctx, next) => {
-    ctx.response.type = "text/javascript";
-    ctx.body = createReadStream("." + ctx.request.path);
-  };
-
-  for (const t of tests) {
-    router.addRoute("GET", t, tf);
-  }
-
   app.use(router.middleware());
 
   app.use(async (ctx, next) => {
-    if (!ctx.response.type) {
-      if (ctx.request.path.endsWith(".mjs")) {
-        ctx.response.type = "text/javascript";
+    const path = ctx.request.path;
+    console.log(path);
+    if (path.endsWith(".mjs")) {
+      ctx.response.type = "text/javascript";
 
-        // use 'es-module-lexer' to rewrite imports
+      // use 'es-module-lexer' to rewrite imports
 
-        ctx.body = createReadStream("." + ctx.request.path);
-      }
+      ctx.body = createReadStream("." + path);
     }
     await next();
   });
