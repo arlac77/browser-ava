@@ -2,7 +2,6 @@
 import { createReadStream, readFileSync } from "node:fs";
 import { chromium } from "playwright";
 import Koa from "koa";
-import Router from "koa-better-router";
 import Static from "koa-static";
 import { WebSocketServer } from "ws";
 import { program } from "commander";
@@ -42,8 +41,10 @@ program
             break;
           case "result":
             console.log(">result");
-        //    console.log(JSON.stringify(data.data, undefined, 2));
-            const failed = data.data.find(f => f.tests.find(t => t.passed === false));
+            //    console.log(JSON.stringify(data.data, undefined, 2));
+            const failed = data.data.find(f =>
+              f.tests.find(t => t.passed === false)
+            );
             console.log(failed ? "failed" : "passed");
 
             if (!options.keepOpen) {
@@ -69,15 +70,10 @@ async function createServer(tests, options) {
   let port = options.port;
 
   const app = new Koa();
-  const router = Router();
 
   app.use(Static(new URL("./browser", import.meta.url).pathname));
 
-  app.on("error", err => {
-    console.error("server error", err);
-  });
-
-  app.use(router.middleware());
+  app.on("error", console.error);
 
   app.use(async (ctx, next) => {
     const path = ctx.request.path;

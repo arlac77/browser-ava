@@ -4,9 +4,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "exports": {
-    "./": "./src/ava.mjs"
-  },
   "description": "Run ava tests in the browser",
   "contributors": [
     {
@@ -26,7 +23,6 @@
   "dependencies": {
     "commander": "^9.4.1",
     "koa": "^2.13.4",
-    "koa-better-router": "^2.1.1",
     "koa-static": "^5.0.0",
     "playwright": "^1.26.1",
     "ws": "^8.9.0"
