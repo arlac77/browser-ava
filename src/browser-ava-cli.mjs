@@ -4,6 +4,7 @@ import { chromium } from "playwright";
 import Koa from "koa";
 import Router from "koa-better-router";
 import Static from "koa-static";
+import { WebSocketServer } from "ws";
 import { program } from "commander";
 
 const utf8EncodingOptions = { encoding: "utf8" };
@@ -27,19 +28,35 @@ program
   )
   .argument("<tests...>")
   .action(async (tests, options) => {
-    const { server, port } = await createServer(tests, options);
+    const { server, port, wss } = await createServer(tests, options);
+
+    wss.on("connection", ws => {
+      ws.on("message", async data => {
+        data = JSON.parse(data);
+        switch (data.action) {
+          case "ready":
+            console.log(">ready");
+
+            console.log("<run");
+            ws.send(JSON.stringify({ action: "run" }));
+            break;
+          case "result":
+            console.log(">result");
+            //console.log(JSON.stringify(data, undefined, 2));
+            if (!options.keepOpen) {
+              await browser.close();
+              server.close();
+            }
+        }
+      });
+
+      console.log("<load");
+      ws.send(JSON.stringify({ action: "load", data: tests }));
+    });
 
     const browser = await chromium.launch({ headless: options.headless });
     const page = await browser.newPage();
     await page.goto(`http://localhost:${port}/index.html`);
-
-    const run = page.locator("#run");
-    await run.click();
-
-    if (!options.keepOpen) {
-      await browser.close();
-      server.close();
-    }
   });
 
 program.parse(process.argv);
@@ -54,11 +71,6 @@ async function createServer(tests, options) {
 
   app.on("error", err => {
     console.error("server error", err);
-  });
-
-  router.addRoute("GET", "tests.json", (ctx, next) => {
-    ctx.response.type = "application/json";
-    ctx.body = tests;
   });
 
   const tf = (ctx, next) => {
@@ -95,8 +107,11 @@ async function createServer(tests, options) {
     });
   });
 
+  const wss = new WebSocketServer({ server });
+
   return {
     server,
+    wss,
     port
   };
 }

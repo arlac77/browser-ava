@@ -1,20 +1,32 @@
 import { world } from "ava";
 
-async function loadTests() {
-  const response = await fetch("tests.json");
+let ws = new WebSocket(`ws://${location.host}`);
+ws.onerror = error => {
+  console.log(error);
+};
 
-  for (const file of await response.json()) {
-    world.current = world.files[file] = { file, tests: [] };
-    await import(new URL(file, import.meta.url));
+ws.onmessage = async message => {
+  const data = JSON.parse(message.data);
+  switch (data.action) {
+    case "load": {
+      for (const file of data.data) {
+        world.current = { file, tests: [] };
+        world.files.push(world.current);
+        await import(new URL(file, import.meta.url));
+      }
+
+      displayTests();
+      ws.send(JSON.stringify({ action: "ready" }));
+    }
+    case "run": {
+      await runTests();
+    }
   }
-}
+};
 
 async function displayTests() {
   const run = document.getElementById("run");
-  run.onclick = async () => {
-    await runTests();
-    displayTests();
-  };
+  run.onclick = runTests;
 
   function renderTest(t) {
     return `<li class="${
@@ -29,20 +41,15 @@ async function displayTests() {
     }</span>${t.message ? t.message : ""}</li>`;
   }
 
-  function renderFile(f, def) {
-    return `<li id="${f}">${f}<ul>${def.tests
+  function renderFile(f) {
+    return `<li id="${f.file}">${f.file}<ul>${f.tests
       .map(renderTest)
       .join("\n")}</ul></li>`;
   }
 
   const tests = document.getElementById("tests");
 
-  tests.innerHTML =
-    "<ul>" +
-    Object.entries(world.files)
-      .map(([f, def]) => renderFile(f, def))
-      .join("\n") +
-    "</ul>";
+  tests.innerHTML = "<ul>" + world.files.map(renderFile).join("\n") + "</ul>";
 }
 
 async function runTest(test) {
@@ -74,18 +81,20 @@ async function runTest(test) {
  * run serial tests before of all others
  */
 async function runTests() {
-  for (const [file, def] of Object.entries(world.files)) {
-    for (const test of def.tests.filter(test => test.serial)) {
+  for (const f of world.files) {
+    for (const test of f.tests.filter(test => test.serial)) {
       await runTest(test);
     }
 
     await Promise.all(
-      def.tests.filter(test => !test.serial).map(test => runTest(test))
+      f.tests.filter(test => !test.serial).map(test => runTest(test))
     );
   }
-}
 
-loadTests().then(() => displayTests());
+  ws.send(JSON.stringify({ action: "result", data: world.files }));
+
+  displayTests();
+}
 
 function testContext(def) {
   const title = def.title;

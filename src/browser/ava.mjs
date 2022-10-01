@@ -1,7 +1,7 @@
 /**
  * Holds all tests
  */
-export const world = { files: {}, current: undefined };
+export const world = { files: [], current: undefined };
 
 /**
  * Collect all tests into world
