@@ -56,17 +56,6 @@ async function createServer(tests, options) {
     console.error("server error", err);
   });
 
-  const esm = (ctx, next) => {
-    ctx.response.type = "text/javascript";
-    ctx.body = createReadStream(
-      new URL("." + ctx.request.path, import.meta.url).pathname
-    );
-  };
-
-  for (const e of ["runtime.mjs"]) {
-    router.addRoute("GET", e, esm);
-  }
-
   router.addRoute("GET", "tests.json", (ctx, next) => {
     ctx.response.type = "application/json";
     ctx.body = tests;
