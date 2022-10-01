@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createReadStream, readFileSync } from "fs";
+import { createReadStream, readFileSync } from "node:fs";
 import { chromium } from "playwright";
 import Koa from "koa";
 import Router from "koa-better-router";
@@ -40,10 +40,6 @@ program
 program.parse(process.argv);
 
 async function createServer(tests,options) {
-  const pkg = JSON.parse(
-    await readFileSync("package.json", utf8EncodingOptions)
-  );
-
   const importmap = {
     imports: {
       ava: "./src/browser/ava.mjs"
