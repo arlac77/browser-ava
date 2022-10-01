@@ -9,6 +9,15 @@ test("test.2", t => {
   t.true(1 === 2, "assert title 2");
 });
 
+test("test.empty", t => {});
+test("test.pass", t => {
+  t.pass();
+});
+
+test("test.fail", t => {
+  t.fail();
+});
+
 test.serial("test.serial.1", t => {
   t.true(1 === 1);
 });
