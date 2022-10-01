@@ -15,13 +15,15 @@ const { version, description } = JSON.parse(
 );
 
 let headless = false;
-let keepOpen = true;
 
 program
   .description(description)
   .version(version)
+  .option('--no-keep-open', 'keep browser-ava and the page open after execution', true)
   .argument("<tests...>")
   .action(async (tests, options) => {
+    console.log(options);
+    
     const { server, port } = await createServer(tests);
 
     const browser = await chromium.launch({ headless });
@@ -31,7 +33,7 @@ program
     const run = page.locator("#run");
     await run.click();
 
-    if (!keepOpen) {
+    if (!options.keepOpen) {
       await browser.close();
       server.close();
     }
