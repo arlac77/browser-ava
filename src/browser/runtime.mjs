@@ -1,4 +1,4 @@
-import { world } from "ava";
+import { world } from "./ava.mjs";
 
 let ws = new WebSocket(`ws://${location.host}`);
 ws.onerror = console.error;
