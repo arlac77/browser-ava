@@ -54,12 +54,13 @@ async function runTest(test) {
 
       if (test.assertions.length === 0) {
         test.passed = false;
+        test.message = "Test finished without running any assertions";
       } else {
         test.passed = !test.assertions.find(a => a.passed !== true);
 
         if (t.planned !== undefined && t.planned !== test.assertions.length) {
           test.passed = false;
-          test.message = `Planned for ${t.planned} but got ${test.assertions.length} assertions`;
+          test.message = `Planned for ${t.planned} assertions, but got ${test.assertions.length}`;
         }
       }
     } catch (e) {
