@@ -1,5 +1,7 @@
 import test from "ava";
 
+test.before(t => {});
+
 test("test.1", t => {
   t.log("1st. assertion is coming soon");
   t.is(1, 1, "assert title 1");

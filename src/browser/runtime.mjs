@@ -18,14 +18,14 @@ ws.onmessage = async message => {
       ws.send(JSON.stringify({ action: "ready" }));
     }
     case "run": {
-      await runTests();
+      await runTestModules();
     }
   }
 };
 
 async function displayTests() {
   const run = document.getElementById("run");
-  run.onclick = runTests;
+  run.onclick = runTestModules;
 
   function renderTest(t) {
     return `<li class="${
@@ -79,16 +79,18 @@ async function runTest(test) {
 /**
  * run serial tests before all others
  */
-async function runTests() {
-  for (const tm of testModules) {
-    for (const test of tm.tests.filter(test => test.serial)) {
-      await runTest(test);
-    }
-
-    await Promise.all(
-      tm.tests.filter(test => !test.serial).map(test => runTest(test))
-    );
+async function runTestModule(tm) {
+  for (const test of tm.tests.filter(test => test.serial)) {
+    await runTest(test);
   }
+
+  await Promise.all(
+    tm.tests.filter(test => !test.serial).map(test => runTest(test))
+  );
+}
+
+async function runTestModules() {
+  await Promise.all(testModules.map(tm=>runTestModule(tm)));
 
   ws.send(JSON.stringify({ action: "result", data: testModules }));
 
