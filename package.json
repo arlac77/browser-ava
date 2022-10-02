@@ -13,7 +13,7 @@
   ],
   "license": "BSD-2-Clause",
   "bin": {
-    "browser-ava": ".src/browser-ava-cli.mjs"
+    "browser-ava": "src/browser-ava-cli.mjs"
   },
   "scripts": {
     "test": "npm run test:ava",
