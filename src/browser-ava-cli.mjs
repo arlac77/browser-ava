@@ -45,7 +45,7 @@ program
       return { url: `${TESTCASES}/${n++}.mjs`, file };
     });
 
-    const { server, port, wss } = await createServer(tests, options);
+    const { server, wss } = await createServer(tests, options);
 
     wss.on("connection", ws => {
       ws.on("message", async data => {
@@ -84,7 +84,7 @@ program
 
     const browser = await chromium.launch({ headless: options.headless });
     const page = await browser.newPage();
-    await page.goto(`http://localhost:${port}/index.html`);
+    await page.goto(`http://localhost:${options.port}/index.html`);
   });
 
 program.parse(process.argv);
@@ -109,8 +109,6 @@ async function loadAndRewriteImports(file) {
 }
 
 async function createServer(tests, options) {
-  let port = options.port;
-
   const app = new Koa();
 
   app.use(Static(new URL("./browser", import.meta.url).pathname));
@@ -133,7 +131,7 @@ async function createServer(tests, options) {
   });
 
   const server = await new Promise((resolve, reject) => {
-    const server = app.listen(port, error => {
+    const server = app.listen(options.port, error => {
       if (error) {
         reject(error);
       } else {
@@ -146,7 +144,6 @@ async function createServer(tests, options) {
 
   return {
     server,
-    wss,
-    port
+    wss
   };
 }
