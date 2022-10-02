@@ -35,16 +35,44 @@ test.todo = title => {
 
 test.serial.todo = test.todo;
 
-test.before = () => {};
-test.before.always = () => {};
-test.serial.before = () => {};
+test.before = (...args) => {
+  const def = { args };
+  testModules.at(-1).before.push(def);
+  return def;
+};
+test.before.always = (...args) => {
+  test.before(...args).always = true;
+};
+test.serial.before = (...args) => {
+  test.before(...args).serial = true;
+};
 
-test.after = () => {};
-test.after.always = () => {};
-test.serial.after = () => {};
+test.after = (...args) => {
+  const def = { args };
+  testModules.at(-1).after.push(def);
+  return def;
+};
+test.after.always = (...args) => {
+  test.after(...args).always = true;
+};
+test.serial.after = (...args) => {
+  test.after(...args).serial = true;
+};
 
-test.beforeEach = () => {};
-test.beforeEach.always = () => {};
+test.beforeEach = (...args) => {
+  const def = { args };
+  testModules.at(-1).beforeEach.push(def);
+  return def;
+};
+test.beforeEach.always = (...args) => {
+  test.beforeEach(...args).always = true;
+};
 
-test.afterEach = () => {};
-test.afterEach.always = () => {};
+test.afterEach = (...args) => {
+  const def = { args };
+  testModules.at(-1).afterEach.push(def);
+  return def;
+};
+test.afterEach.always = () => {
+  test.afterEach(...args).always = true;
+};

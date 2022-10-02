@@ -1,6 +1,16 @@
 import test from "ava";
 
 test.before(t => {});
+test.before.always(t => {});
+test.after(t => {});
+test.after.always(t => {});
+
+test.beforeEach(t => {
+  console.log("beforeEach", t.title);
+});
+test.afterEach('test.afterEach',t => {
+  console.log("afterEach", t.title);
+});
 
 test("test.1", t => {
   t.log("1st. assertion is coming soon");

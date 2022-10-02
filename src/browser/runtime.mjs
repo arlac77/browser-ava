@@ -10,6 +10,10 @@ ws.onmessage = async message => {
       testModules.length = 0;
       for (const tm of data.data) {
         tm.tests = [];
+        tm.before = [];
+        tm.after = [];
+        tm.beforeEach = [];
+        tm.afterEach = [];
         testModules.push(tm);
         await import(new URL(tm.url, import.meta.url));
       }
@@ -51,12 +55,26 @@ async function displayTests() {
   tests.innerHTML = "<ul>" + testModules.map(renderModule).join("\n") + "</ul>";
 }
 
-async function runTest(test) {
+async function execHooks(hooks, t) {
+  if (hooks.length > 0) {
+    await Promise.all(
+      hooks.map(async h => {
+        h.args[typeof h.args[0] === "string" ? 1 : 0](t);
+      })
+    );
+  }
+}
+
+async function runTest(tm, test) {
   if (!test.skip && !test.todo) {
     const t = testContext(test);
 
     try {
+      await execHooks(tm.beforeEach, t);
+
       await test.body(t, ...test.args);
+      
+      await execHooks(tm.afterEach, t);
 
       if (test.assertions.length === 0) {
         test.passed = false;
@@ -81,16 +99,16 @@ async function runTest(test) {
  */
 async function runTestModule(tm) {
   for (const test of tm.tests.filter(test => test.serial)) {
-    await runTest(test);
+    await runTest(tm, test);
   }
 
   await Promise.all(
-    tm.tests.filter(test => !test.serial).map(test => runTest(test))
+    tm.tests.filter(test => !test.serial).map(test => runTest(tm, test))
   );
 }
 
 async function runTestModules() {
-  await Promise.all(testModules.map(tm=>runTestModule(tm)));
+  await Promise.all(testModules.map(tm => runTestModule(tm)));
 
   ws.send(JSON.stringify({ action: "result", data: testModules }));
 
