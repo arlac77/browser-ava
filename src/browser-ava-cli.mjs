@@ -15,6 +15,8 @@ const { version, description } = JSON.parse(
   )
 );
 
+const TESTCASES = "/testcases/";
+
 program
   .description(description)
   .version(version)
@@ -56,7 +58,9 @@ program
       });
 
       console.log("<load");
-      ws.send(JSON.stringify({ action: "load", data: tests }));
+      ws.send(
+        JSON.stringify({ action: "load", data: tests.map(p => TESTCASES + p) })
+      );
     });
 
     const browser = await chromium.launch({ headless: options.headless });
@@ -76,14 +80,14 @@ async function createServer(tests, options) {
   app.on("error", console.error);
 
   app.use(async (ctx, next) => {
-    const path = ctx.request.path;
-    console.log(path);
-    if (path.endsWith(".mjs")) {
+    let path = ctx.request.path;
+    if (path.startsWith(TESTCASES)) {
+      path = path.substring(TESTCASES.length);
+      console.log(path);
+
       ctx.response.type = "text/javascript";
 
-      // use 'es-module-lexer' to rewrite imports
-
-      ctx.body = createReadStream("." + path);
+      ctx.body = createReadStream(path);
     }
     await next();
   });
