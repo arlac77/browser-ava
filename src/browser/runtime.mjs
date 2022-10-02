@@ -1,17 +1,17 @@
-import { world } from "./ava.mjs";
+import { testModules } from "./ava.mjs";
 
 let ws = new WebSocket(`ws://${location.host}`);
 ws.onerror = console.error;
-
 
 ws.onmessage = async message => {
   const data = JSON.parse(message.data);
   switch (data.action) {
     case "load": {
-      for (const file of data.data) {
-        world.current = { file, tests: [] };
-        world.files.push(world.current);
-        await import(new URL(file.url,import.meta.url));
+      testModules.length = 0;
+      for (const tm of data.data) {
+        tm.tests = [];
+        testModules.push(tm);
+        await import(new URL(tm.url, import.meta.url));
       }
 
       displayTests();
@@ -40,15 +40,15 @@ async function displayTests() {
     }</span>${t.message ? t.message : ""}</li>`;
   }
 
-  function renderFile(f) {
-    return `<li id="${f.file.file}">${f.file.file}<ul>${f.tests
+  function renderModule(tm) {
+    return `<li id="${tm.file}">${tm.file}<ul>${tm.tests
       .map(renderTest)
       .join("\n")}</ul></li>`;
   }
 
   const tests = document.getElementById("tests");
 
-  tests.innerHTML = "<ul>" + world.files.map(renderFile).join("\n") + "</ul>";
+  tests.innerHTML = "<ul>" + testModules.map(renderModule).join("\n") + "</ul>";
 }
 
 async function runTest(test) {
@@ -80,17 +80,17 @@ async function runTest(test) {
  * run serial tests before all others
  */
 async function runTests() {
-  for (const f of world.files) {
-    for (const test of f.tests.filter(test => test.serial)) {
+  for (const tm of testModules) {
+    for (const test of tm.tests.filter(test => test.serial)) {
       await runTest(test);
     }
 
     await Promise.all(
-      f.tests.filter(test => !test.serial).map(test => runTest(test))
+      tm.tests.filter(test => !test.serial).map(test => runTest(test))
     );
   }
 
-  ws.send(JSON.stringify({ action: "result", data: world.files }));
+  ws.send(JSON.stringify({ action: "result", data: testModules }));
 
   displayTests();
 }

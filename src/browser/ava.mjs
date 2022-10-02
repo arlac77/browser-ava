@@ -1,14 +1,14 @@
 /**
  * Holds all tests
  */
-export const world = { files: [], current: undefined };
+export const testModules = [];
 
 /**
- * Collect all tests into world
+ * Collect all tests into testModules
  */
 export default function test(title, body, ...args) {
   const def = { title, body, args, skip: false };
-  world.current.tests.push(def);
+  testModules.at(-1).tests.push(def);
   return def;
 }
 
@@ -30,7 +30,7 @@ test.serial = (...args) => {
 
 test.todo = title => {
   const def = { title, todo: true };
-  world.current.tests.push(def);
+  testModules.at(-1).tests.push(def);
 };
 
 test.serial.todo = test.todo;
