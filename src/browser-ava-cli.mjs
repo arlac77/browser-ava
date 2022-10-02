@@ -103,6 +103,9 @@ async function loadAndRewriteImports(file) {
     if(m) {
       body = body.substring(0,i.s) + m + body.substring(i.e);
     }
+    else {
+      console.log("unknown import", i.n);
+    }
   }
 
   return body;
@@ -117,6 +120,12 @@ async function createServer(tests, options) {
 
   app.use(async (ctx, next) => {
     const path = ctx.request.path;
+
+    if(path === "/testcases/foo.mjs") {
+      ctx.response.type = "text/javascript";
+      ctx.body = await loadAndRewriteImports('tests/fixtures/tests/foo.mjs');
+      return;
+    }
 
     if (path.startsWith(TESTCASES)) {
       for (const t of tests) {

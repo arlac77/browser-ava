@@ -1,5 +1,7 @@
 import test from "ava";
 
+import { foo } from "./foo.mjs";
+
 test.before(t => {
   console.log("before");
 });
@@ -19,6 +21,7 @@ test.afterEach('test.afterEach',t => {
 test("test.1", t => {
   t.log("1st. assertion is coming soon");
   t.is(1, 1, "assert title 1");
+  t.is(foo(),"foo");
 });
 
 test("test.2", t => {
