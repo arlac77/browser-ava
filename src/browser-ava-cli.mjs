@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { createReadStream, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import { init, parse } from "es-module-lexer";
 import { chromium } from "playwright";
 import Koa from "koa";
@@ -41,15 +42,7 @@ program
 
     let n = 1;
     tests = tests.map(file => {
-      let body = readFileSync(file, utf8EncodingOptions);
-
-      const [imports] = parse(body);
-
-      if(imports[0].n === "ava") {
-        body = body.substring(0, imports[0].s) + "../ava.mjs" + body.substring(imports[0].e)
-      }
-
-      return { url: `${TESTCASES}/${n++}.mjs`, file, body };
+      return { url: `${TESTCASES}/${n++}.mjs`, file };
     });
 
     const { server, port, wss } = await createServer(tests, options);
@@ -96,6 +89,25 @@ program
 
 program.parse(process.argv);
 
+async function loadAndRewriteImports(file) {
+  let body = await readFile(file, utf8EncodingOptions);
+
+  const [imports] = parse(body);
+
+  const importmap = {
+    "ava" : "../ava.mjs"
+  };
+
+  for(const i of imports) {
+    const m = importmap[i.n];
+    if(m) {
+      body = body.substring(0,i.s) + m + body.substring(i.e);
+    }
+  }
+
+  return body;
+}
+
 async function createServer(tests, options) {
   let port = options.port;
 
@@ -112,7 +124,7 @@ async function createServer(tests, options) {
       for (const t of tests) {
         if (t.url === path) {
           ctx.response.type = "text/javascript";
-          ctx.body = t.body;
+          ctx.body = await loadAndRewriteImports(t.file);
           return;
         }
       }
