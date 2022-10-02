@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { createReadStream, readFileSync } from "node:fs";
+import { init, parse } from "es-module-lexer";
 import { chromium } from "playwright";
 import Koa from "koa";
 import Static from "koa-static";
@@ -36,9 +37,19 @@ program
   )
   .argument("<tests...>")
   .action(async (tests, options) => {
+    await init;
+
     let n = 1;
-    tests = tests.map(t => {
-      return { url: `${TESTCASES}/${n++}.mjs`, file: t };
+    tests = tests.map(file => {
+      let body = readFileSync(file, utf8EncodingOptions);
+
+      const [imports] = parse(body);
+
+      if(imports[0].n === "ava") {
+        body = body.substring(0, imports[0].s) + "../ava.mjs" + body.substring(imports[0].e)
+      }
+
+      return { url: `${TESTCASES}/${n++}.mjs`, file, body };
     });
 
     const { server, port, wss } = await createServer(tests, options);
@@ -101,7 +112,7 @@ async function createServer(tests, options) {
       for (const t of tests) {
         if (t.url === path) {
           ctx.response.type = "text/javascript";
-          ctx.body = createReadStream(t.file);
+          ctx.body = t.body;
           return;
         }
       }
