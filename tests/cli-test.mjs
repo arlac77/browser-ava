@@ -14,7 +14,6 @@ test("cli simple", async t => {
   );
 
   t.log(p.all);
-  //console.log(p.all);
 
   t.is(p.exitCode, 0);
 });

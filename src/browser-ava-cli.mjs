@@ -15,6 +15,9 @@ const { version, description } = JSON.parse(
   )
 );
 
+/**
+ * route for testcases
+ */
 const TESTCASES = "/testcases";
 
 program
@@ -92,14 +95,14 @@ async function createServer(tests, options) {
   app.on("error", console.error);
 
   app.use(async (ctx, next) => {
-    let path = ctx.request.path;
+    const path = ctx.request.path;
 
     if (path.startsWith(TESTCASES)) {
       for (const t of tests) {
         if (t.url === path) {
           ctx.response.type = "text/javascript";
           ctx.body = createReadStream(t.file);
-          break;
+          return;
         }
       }
     }

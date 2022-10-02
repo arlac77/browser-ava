@@ -98,13 +98,12 @@ async function runTestModules() {
 }
 
 function testContext(def) {
-  const title = def.title;
   def.assertions = [];
 
   return {
     teardowns: [],
     logs: [],
-    title,
+    title: def.title,
     context: {},
 
     log(...args) {
