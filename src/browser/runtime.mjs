@@ -65,15 +65,15 @@ async function execHooks(hooks, t) {
   }
 }
 
-async function runTest(tm, test) {
+async function runTest(parent, tm, test) {
   if (!test.skip && !test.todo) {
-    const t = testContext(test);
+    const t = testContext(test, parent);
 
     try {
       await execHooks(tm.beforeEach, t);
 
       await test.body(t, ...test.args);
-      
+
       await execHooks(tm.afterEach, t);
 
       if (test.assertions.length === 0) {
@@ -98,13 +98,21 @@ async function runTest(tm, test) {
  * run serial tests before all others
  */
 async function runTestModule(tm) {
+  const t = {
+    context: {}
+  };
+
+  await execHooks(tm.before, t);
+
   for (const test of tm.tests.filter(test => test.serial)) {
-    await runTest(tm, test);
+    await runTest(t, tm, test);
   }
 
   await Promise.all(
-    tm.tests.filter(test => !test.serial).map(test => runTest(tm, test))
+    tm.tests.filter(test => !test.serial).map(test => runTest(t, tm, test))
   );
+
+  await execHooks(tm.after, t);
 }
 
 async function runTestModules() {
@@ -115,14 +123,14 @@ async function runTestModules() {
   displayTests();
 }
 
-function testContext(def) {
+function testContext(def, parentContext) {
   def.assertions = [];
 
   return {
+    ...parentContext,
     teardowns: [],
     logs: [],
     title: def.title,
-    context: {},
 
     log(...args) {
       this.logs.push(args);

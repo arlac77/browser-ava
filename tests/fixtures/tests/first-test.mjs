@@ -1,8 +1,12 @@
 import test from "ava";
 
-test.before(t => {});
+test.before(t => {
+  console.log("before");
+});
 test.before.always(t => {});
-test.after(t => {});
+test.after(t => {
+  console.log("after");
+});
 test.after.always(t => {});
 
 test.beforeEach(t => {
