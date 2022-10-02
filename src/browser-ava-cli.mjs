@@ -15,12 +15,16 @@ const { version, description } = JSON.parse(
   )
 );
 
-const TESTCASES = "/testcases/";
+const TESTCASES = "/testcases";
 
 program
   .description(description)
   .version(version)
-  .addOption(new Option('-p, --port <number>', 'server port to use').default(8080).env('PORT'))
+  .addOption(
+    new Option("-p, --port <number>", "server port to use")
+      .default(8080)
+      .env("PORT")
+  )
   .option("--headless", "hide browser window", false)
   .option(
     "--no-keep-open",
@@ -29,6 +33,11 @@ program
   )
   .argument("<tests...>")
   .action(async (tests, options) => {
+    let n = 1;
+    tests = tests.map(t => {
+      return { url: `${TESTCASES}/${n++}.mjs`, file: t };
+    });
+
     const { server, port, wss } = await createServer(tests, options);
 
     wss.on("connection", ws => {
@@ -59,7 +68,10 @@ program
 
       console.log("<load");
       ws.send(
-        JSON.stringify({ action: "load", data: tests.map(p => TESTCASES + p) })
+        JSON.stringify({
+          action: "load",
+          data: tests
+        })
       );
     });
 
@@ -81,13 +93,15 @@ async function createServer(tests, options) {
 
   app.use(async (ctx, next) => {
     let path = ctx.request.path;
+
     if (path.startsWith(TESTCASES)) {
-      path = path.substring(TESTCASES.length);
-      console.log(path);
-
-      ctx.response.type = "text/javascript";
-
-      ctx.body = createReadStream(path);
+      for (const t of tests) {
+        if (t.url === path) {
+          ctx.response.type = "text/javascript";
+          ctx.body = createReadStream(t.file);
+          break;
+        }
+      }
     }
     await next();
   });

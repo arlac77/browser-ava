@@ -11,7 +11,7 @@ ws.onmessage = async message => {
       for (const file of data.data) {
         world.current = { file, tests: [] };
         world.files.push(world.current);
-        await import(new URL(file, import.meta.url));
+        await import(new URL(file.url,import.meta.url));
       }
 
       displayTests();
@@ -41,7 +41,7 @@ async function displayTests() {
   }
 
   function renderFile(f) {
-    return `<li id="${f.file}">${f.file}<ul>${f.tests
+    return `<li id="${f.file.file}">${f.file.file}<ul>${f.tests
       .map(renderTest)
       .join("\n")}</ul></li>`;
   }
