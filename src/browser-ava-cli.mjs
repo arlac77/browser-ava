@@ -4,7 +4,7 @@ import { chromium } from "playwright";
 import Koa from "koa";
 import Static from "koa-static";
 import { WebSocketServer } from "ws";
-import { program } from "commander";
+import { program, Option } from "commander";
 
 const utf8EncodingOptions = { encoding: "utf8" };
 
@@ -20,7 +20,7 @@ const TESTCASES = "/testcases/";
 program
   .description(description)
   .version(version)
-  .option("--port <number>", "server port to use", 8080)
+  .addOption(new Option('-p, --port <number>', 'server port to use').default(8080).env('PORT'))
   .option("--headless", "hide browser window", false)
   .option(
     "--no-keep-open",
