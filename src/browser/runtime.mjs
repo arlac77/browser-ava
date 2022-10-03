@@ -34,7 +34,13 @@ async function displayTests() {
 
   function renderTest(t) {
     return `<li class="${
-      t.passed === true ? "passed" : t.passed === false ? "failed" : ""
+      t.passed === true
+        ? "passed"
+        : t.passed === false
+        ? "failed"
+        : t.todo
+        ? "todo"
+        : ""
     }">${t.title} <span>${
       t.assertions
         ? t.assertions
@@ -161,8 +167,9 @@ function testContext(def, parentContext) {
             }
           }
           if (expectation.message !== undefined) {
+            const slot = "message";
+
             if (typeof expectation.message === "string") {
-              const slot = "message";
               if (expectation[slot] !== e[slot]) {
                 def.assertions.push({
                   passed: false,

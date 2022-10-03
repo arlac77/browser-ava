@@ -5,3 +5,7 @@
 .failed {
     background-color: red
 }
+
+.todo {
+    background-color: yellow
+}
