@@ -154,6 +154,7 @@ function testContext(def, parentContext) {
     throws(a, title) {
       try {
         a();
+        def.assertions.push({ passed: false, title, message: "Expected exception to be thrown" });
       } catch (e) {
         def.assertions.push({ passed: true, title });
       }
