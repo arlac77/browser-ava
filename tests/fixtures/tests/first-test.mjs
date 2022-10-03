@@ -31,6 +31,12 @@ test("test.2", t => {
   t.true(1 === 2, "assert title 2");
 });
 
+test("test.throws", t => {
+  t.throws(() => {
+    throw new Error("must throw");
+  });
+});
+
 test("test.empty", t => {});
 test("test.plan", t => {
   t.plan(2);
