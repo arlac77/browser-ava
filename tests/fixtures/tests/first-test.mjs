@@ -11,7 +11,6 @@ function wait(ms=1000) {
 test.before(t => {
   console.log("before");
 });
-test.before.always(t => {});
 test.after(t => {
   console.log("after");
 });

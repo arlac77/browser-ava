@@ -40,9 +40,7 @@ test.before = (...args) => {
   testModules.at(-1).before.push(def);
   return def;
 };
-test.before.always = (...args) => {
-  test.before(...args).always = true;
-};
+
 test.serial.before = (...args) => {
   test.before(...args).serial = true;
 };
@@ -52,9 +50,7 @@ test.after = (...args) => {
   testModules.at(-1).after.push(def);
   return def;
 };
-test.after.always = (...args) => {
-  test.after(...args).always = true;
-};
+
 test.serial.after = (...args) => {
   test.after(...args).serial = true;
 };
