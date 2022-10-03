@@ -145,6 +145,49 @@ function testContext(def, parentContext) {
   def.assertions = [];
   def.logs = [];
 
+  function throwsExpectationHandler(e, expectation,title) {
+    if (expectation !== undefined) {
+      for (const slot of ["name", "code", "is"]) {
+        if (expectation[slot] !== undefined) {
+          if (expectation[slot] !== e[slot]) {
+            def.assertions.push({
+              passed: false,
+              message: `expected ${slot}=${expectation[slot]} but got ${e[slot]}`,
+              title
+            });
+            return false;
+          }
+        }
+      }
+      if (expectation.message !== undefined) {
+        const slot = "message";
+        if (expectation.message instanceof RegExp) {
+          if (!expectation.message.test(e.message)) {
+            def.assertions.push({
+              passed: false,
+              message: `${slot} does not match ${expectation[slot]}`,
+              title
+            });
+            return false;
+          }
+        }
+
+        if (typeof expectation.message === "string") {
+          if (expectation[slot] !== e[slot]) {
+            def.assertions.push({
+              passed: false,
+              message: `expected ${slot}=${expectation[slot]} but got ${e[slot]}`,
+              title
+            });
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
   const assertions = {
     pass(title) {
       def.assertions.push({ passed: true, title });
@@ -157,6 +200,21 @@ function testContext(def, parentContext) {
       });
     },
 
+    async throwsAsync(a, expectation, title) {
+      try {
+        await a();
+        def.assertions.push({
+          passed: false,
+          title,
+          message: "Expected exception to be thrown"
+        });
+      } catch (e) {
+        if (throwsExpectationHandler(expectation, title)) {
+          def.assertions.push({ passed: true, title });
+        }
+      }
+    },
+
     throws(a, expectation, title) {
       try {
         a();
@@ -166,45 +224,9 @@ function testContext(def, parentContext) {
           message: "Expected exception to be thrown"
         });
       } catch (e) {
-        if (expectation !== undefined) {
-          for (const slot of ["name", "code", "is"]) {
-            if (expectation[slot] !== undefined) {
-              if (expectation[slot] !== e[slot]) {
-                def.assertions.push({
-                  passed: false,
-                  message: `expected ${slot}=${expectation[slot]} but got ${e[slot]}`,
-                  title
-                });
-                return;
-              }
-            }
-          }
-          if (expectation.message !== undefined) {
-            const slot = "message";
-            if (expectation.message instanceof RegExp) {
-              if (!expectation.message.test(e.message)) {
-                def.assertions.push({
-                  passed: false,
-                  message: `${slot} does not match ${expectation[slot]}`,
-                  title
-                });
-                return;
-              }
-            }
-
-            if (typeof expectation.message === "string") {
-              if (expectation[slot] !== e[slot]) {
-                def.assertions.push({
-                  passed: false,
-                  message: `expected ${slot}=${expectation[slot]} but got ${e[slot]}`,
-                  title
-                });
-                return;
-              }
-            }
-          }
+        if (throwsExpectationHandler(expectation, title)) {
+          def.assertions.push({ passed: true, title });
         }
-        def.assertions.push({ passed: true, title });
       }
     },
     deepEqual(a, b, title) {

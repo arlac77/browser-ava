@@ -70,6 +70,12 @@ test("test.throws", t => {
   );
 });
 
+test('test.throwsAsync', async t => {
+	await t.throwsAsync(async () => {
+		throw new TypeError('🦄');
+	}, {instanceOf: TypeError, message: '🦄'});
+});
+
 test("test.empty", t => {});
 test("test.plan", t => {
   t.plan(2);
