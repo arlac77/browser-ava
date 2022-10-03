@@ -1,5 +1,5 @@
 import { testModules } from "./ava.mjs";
-import { calculateSummary } from "./util.mjs";
+import { calculateSummary, summaryMessages } from "./util.mjs";
 
 let ws = new WebSocket(`ws://${location.host}`);
 ws.onerror = console.error;
@@ -62,9 +62,7 @@ async function displayTests() {
   const tests = document.getElementById("tests");
   tests.innerHTML = "<ul>" + testModules.map(renderModule).join("\n") + "</ul>";
 
-  const { failed, knownFailure, todo } = calculateSummary(testModules);
-  const summary = document.getElementById("summary");
-  summary.innerHTML = `${failed} tests failed<br/>${knownFailure} known failure<br/>${todo} tests todo`;
+  document.getElementById("summary").innerHTML=summaryMessages(calculateSummary(testModules)).join('<br/>');
 }
 
 async function execHooks(hooks, t) {

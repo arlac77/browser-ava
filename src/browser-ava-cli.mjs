@@ -8,7 +8,7 @@ import Koa from "koa";
 import Static from "koa-static";
 import { WebSocketServer } from "ws";
 import { program, Option } from "commander";
-import { calculateSummary } from "./browser/util.mjs";
+import { calculateSummary, summaryMessages } from "./browser/util.mjs";
 
 const utf8EncodingOptions = { encoding: "utf8" };
 
@@ -70,16 +70,16 @@ program
             ws.send(JSON.stringify({ action: "run" }));
             break;
           case "result":
-            const { failed, knownFailure, todo } = calculateSummary(data.data);
+            const summary = calculateSummary(data.data);
 
-            console.log(`${failed} tests failed`);
-            console.log(`${knownFailure} known failure`);
-            console.log(`${todo} tests todo`);
+            for (const m of summaryMessages(summary)) {
+              console.log(m);
+            }
 
             if (!options.keepOpen) {
               await Promise.all(openBrowsers.map(browser => browser.close()));
               server.close();
-              process.exit(failed ? 1 : 0);
+              process.exit(summary.failed ? 1 : 0);
             }
         }
       });
