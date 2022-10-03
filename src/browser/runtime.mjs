@@ -150,7 +150,11 @@ function testContext(def, parentContext) {
       def.assertions.push({ passed: true, title });
     },
     fail(title) {
-      def.assertions.push({ passed: false, title, message: 'Test failed via `t.fail()`' });
+      def.assertions.push({
+        passed: false,
+        title,
+        message: "Test failed via `t.fail()`"
+      });
     },
 
     throws(a, expectation, title) {
@@ -267,7 +271,7 @@ function testContext(def, parentContext) {
     ...skippableAssertions,
     ...parentContext,
     teardowns: [],
-    title: def.title,
+    title: def.body.title ? def.body.title(def.title, ...def.args) : def.title,
     log(...args) {
       def.logs.push(args);
     },

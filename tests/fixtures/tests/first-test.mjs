@@ -89,7 +89,10 @@ function template(t, a, b) {
   t.is(a, b);
 }
 
+template.title = (title, a, b) => `test.template ${a}<>${b}`;
+
 test("test.template", template, 1, 2);
+test(template, 1, 2);
 
 test.serial("test.serial.1", t => {
   t.true(1 === 1);
