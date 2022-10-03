@@ -53,6 +53,29 @@ async function displayTests() {
   const tests = document.getElementById("tests");
 
   tests.innerHTML = "<ul>" + testModules.map(renderModule).join("\n") + "</ul>";
+
+  let failed = 0,
+    knownFailure = 0,
+    todo = 0;
+
+  for (const tm of testModules) {
+    for (const test of tm.tests) {
+      if (test.todo) {
+        todo++;
+      } else {
+        if (!test.passed) {
+          if (test.failing) {
+            knownFailure++;
+          } else {
+            failed++;
+          }
+        }
+      }
+    }
+  }
+  const summary = document.getElementById("summary");
+
+  summary.innerHTML = `${failed} tests failed<br/>${knownFailure} known failure<br/>${todo} tests todo`;
 }
 
 async function execHooks(hooks, t) {
@@ -154,7 +177,11 @@ function testContext(def, parentContext) {
     throws(a, title) {
       try {
         a();
-        def.assertions.push({ passed: false, title, message: "Expected exception to be thrown" });
+        def.assertions.push({
+          passed: false,
+          title,
+          message: "Expected exception to be thrown"
+        });
       } catch (e) {
         def.assertions.push({ passed: true, title });
       }
