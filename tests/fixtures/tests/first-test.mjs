@@ -9,18 +9,18 @@ function wait(ms = 1000) {
 }
 
 test.before(t => {
-  console.log("before");
+  t.log("before");
 });
 test.after(t => {
-  console.log("after");
+  t.log("after");
 });
 test.after.always(t => {});
 
 test.beforeEach(t => {
-  console.log("beforeEach", t.title);
+  t.log("beforeEach", t.title);
 });
 test.afterEach("test.afterEach", t => {
-  console.log("afterEach", t.title);
+  t.log("afterEach", t.title);
 });
 
 test("test.1", t => {

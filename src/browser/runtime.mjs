@@ -109,7 +109,11 @@ async function runTest(parent, tm, test) {
  */
 async function runTestModule(tm) {
   const t = {
-    context: {}
+    context: {},
+    logs: [],
+    log(...args) {
+      this.logs.push(args);
+    },
   };
 
   await execHooks(tm.before, t);
@@ -254,12 +258,8 @@ function testContext(def, parentContext) {
     ...skippableAssertions,
     ...parentContext,
     teardowns: [],
-    logs: [],
     title: def.title,
 
-    log(...args) {
-      this.logs.push(args);
-    },
     plan(count) {
       this.planned = count;
     },
