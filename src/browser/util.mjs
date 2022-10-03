@@ -5,14 +5,16 @@ export function calculateSummary(testModules) {
 
   for (const tm of testModules) {
     for (const test of tm.tests) {
-      if (test.todo) {
-        todo++;
-      } else {
-        if (!test.passed) {
-          if (test.failing) {
-            knownFailure++;
-          } else {
-            failed++;
+      if (!test.skip) {
+        if (test.todo) {
+          todo++;
+        } else {
+          if (!test.passed) {
+            if (test.failing) {
+              knownFailure++;
+            } else {
+              failed++;
+            }
           }
         }
       }
