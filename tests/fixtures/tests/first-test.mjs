@@ -2,7 +2,7 @@ import test from "ava";
 
 import { foo } from "./foo.mjs";
 import { bar } from "bar";
-import { baz } from "baz";
+import { baz, bazbay } from "baz";
 
 function wait(ms = 1000) {
   return new Promise((resolve, reject) => setTimeout(resolve, ms));
@@ -23,11 +23,15 @@ test.afterEach("test.afterEach", t => {
   t.log("afterEach", t.title);
 });
 
-test("test.1", t => {
-  t.log("1st. assertion is coming soon");
+test("test.resolv", t => {
   t.is(foo(), "foo");
   t.is(bar(), "bar");
   t.is(baz(), "baz");
+  t.is(bazbay(), "bazbay");
+});
+
+test("test.kitchensink", t => {
+  t.log("1st. assertion is coming soon");
   t.not(1, 2);
   t.deepEqual([1, { a: 1 }], [1, { a: 1 }]);
 });

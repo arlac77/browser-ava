@@ -138,7 +138,7 @@ async function resolveImport(name, file) {
         throw e;
       }
     }
-    path = dirname(path);
+    path = dirname(dirname(path));
   }
 }
 
