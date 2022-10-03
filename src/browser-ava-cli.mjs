@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs";
-import { readFile, readdir } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { join, dirname, resolve } from "node:path";
 import { init, parse } from "es-module-lexer";
 import { chromium } from "playwright";
@@ -17,11 +17,6 @@ const { version, description } = JSON.parse(
     utf8EncodingOptions
   )
 );
-
-/**
- * route for testcases
- */
-const TESTCASES = "/testcases";
 
 program
   .description(description)
@@ -41,9 +36,8 @@ program
   .action(async (tests, options) => {
     await init;
 
-    let n = 1;
     tests = tests.map(file => {
-      return { url: `${TESTCASES}/${n++}.mjs`, file };
+      return { url: resolve(process.cwd(), file), file };
     });
 
     const { server, wss } = await createServer(tests, options);
@@ -90,10 +84,6 @@ program
 
 program.parse(process.argv);
 
-const importmap = {
-  ava: "../ava.mjs"
-};
-
 function entryPoint(pkg, path) {
   if (pkg.exports) {
     for (const slot of ["browser", "."]) {
@@ -115,11 +105,17 @@ async function resolveImport(name, file) {
     return entryPoint(pkg, path);
   }
 
-  path = join(path, "node_modules", name);
-  pkg = JSON.parse(
-    await readFile(join(path, "package.json"), utf8EncodingOptions)
-  );
-  return entryPoint(pkg, path);
+  try {
+    path = join(path, "node_modules", name);
+    pkg = JSON.parse(
+      await readFile(join(path, "package.json"), utf8EncodingOptions)
+    );
+    return entryPoint(pkg, path);
+  } catch (e) {
+    if (e.code !== "ENOTDIR" && e.code !== "ENOENT") {
+      throw e;
+    }
+  }
 }
 
 async function loadPackage(path) {
@@ -149,11 +145,17 @@ async function loadAndRewriteImports(file) {
   let d = 0;
 
   for (const i of imports) {
-    let m = importmap[i.n];
+    let m;
+
+    if (i.n === "ava") {
+      //  m = new URL("browser/ava.mjs", import.meta.url).pathname;
+      m = "/ava.mjs";
+    }
 
     if (!m) {
       m = await resolveImport(i.n, resolve(process.cwd(), file));
     }
+
     if (m) {
       body = body.substring(0, i.s + d) + m + body.substring(i.e + d);
       d += m.length - i.n.length;
@@ -173,18 +175,11 @@ async function createServer(tests, options) {
   app.use(async (ctx, next) => {
     const path = ctx.request.path;
 
-    if (path.startsWith(TESTCASES)) {
-      for (const t of tests) {
-        if (t.url === path) {
-          ctx.response.type = "text/javascript";
-          ctx.body = await loadAndRewriteImports(t.file);
-          return;
-        }
-      }
+    if (path.endsWith(".mjs") || path.endsWith(".js")) {
+      ctx.response.type = "text/javascript";
+      ctx.body = await loadAndRewriteImports(path);
+      return;
     }
-
-    ctx.response.type = "text/javascript";
-    ctx.body = await loadAndRewriteImports(path);
 
     await next();
   });
