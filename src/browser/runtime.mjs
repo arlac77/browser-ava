@@ -11,18 +11,29 @@ ws.onmessage = async message => {
     case "load":
       {
         testModules.length = 0;
+        let errors = 0;
         for (const tm of data.data) {
+          tm.logs = [];
           tm.tests = [];
           tm.before = [];
           tm.after = [];
           tm.beforeEach = [];
           tm.afterEach = [];
           testModules.push(tm);
-          await import(new URL(tm.url, import.meta.url));
+          try {
+            await import(new URL(tm.url, import.meta.url));
+          } catch (e) {
+            errors++;
+            console.error(e);
+            tm.logs.push(`error importing ${tm.url} ${e}`);
+            ws.send(JSON.stringify({ action: "error", data: e }));
+          }
         }
 
         displayTests();
-        ws.send(JSON.stringify({ action: "ready" }));
+        if(errors === 0) {
+          ws.send(JSON.stringify({ action: "ready" }));
+        }
       }
       break;
     case "run": {
@@ -55,7 +66,7 @@ async function displayTests() {
   }
 
   function renderModule(tm) {
-    return `<li id="${tm.file}">${tm.file}<ul>${tm.tests
+    return `<li id="${tm.file}">${tm.file}<br/>${tm.logs.join('<br/>')}<ul>${tm.tests
       .map(renderTest)
       .join("\n")}</ul></li>`;
   }
@@ -145,7 +156,7 @@ function testContext(def, parentContext) {
   def.assertions = [];
   def.logs = [];
 
-  function throwsExpectationHandler(e, expectation,title) {
+  function throwsExpectationHandler(e, expectation, title) {
     if (expectation !== undefined) {
       for (const slot of ["name", "code", "is"]) {
         if (expectation[slot] !== undefined) {
@@ -287,7 +298,6 @@ function testContext(def, parentContext) {
       () => def.assertions.push({ skipped: true })
     ])
   );
-
 
   return {
     ...assertions,
