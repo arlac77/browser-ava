@@ -184,6 +184,9 @@ async function loadAndRewriteImports(file) {
       body = body.substring(0, i.s + d) + m + body.substring(i.e + d);
       d += m.length - i.n.length;
     }
+    else {
+      console.warn(`Unable to resolve "${i.n}" may lead to import errors`);
+    }
   }
 
   return body;
