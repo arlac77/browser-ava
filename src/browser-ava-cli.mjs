@@ -67,14 +67,9 @@ program
         data = JSON.parse(data);
         switch (data.action) {
           case "ready":
-            console.log(">ready");
-
-            console.log("<run");
             ws.send(JSON.stringify({ action: "run" }));
             break;
           case "result":
-            console.log(">result");
-
             const { failed, knownFailure, todo } = calculateSummary(data.data);
 
             console.log(`${failed} tests failed`);
@@ -82,14 +77,13 @@ program
             console.log(`${todo} tests todo`);
 
             if (!options.keepOpen) {
-              await Promise.all(openBrowsers.map(browser=>browser.close()));
+              await Promise.all(openBrowsers.map(browser => browser.close()));
               server.close();
               process.exit(failed ? 1 : 0);
             }
         }
       });
 
-      console.log("<load");
       ws.send(
         JSON.stringify({
           action: "load",

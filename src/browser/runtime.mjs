@@ -7,21 +7,23 @@ ws.onerror = console.error;
 ws.onmessage = async message => {
   const data = JSON.parse(message.data);
   switch (data.action) {
-    case "load": {
-      testModules.length = 0;
-      for (const tm of data.data) {
-        tm.tests = [];
-        tm.before = [];
-        tm.after = [];
-        tm.beforeEach = [];
-        tm.afterEach = [];
-        testModules.push(tm);
-        await import(new URL(tm.url, import.meta.url));
-      }
+    case "load":
+      {
+        testModules.length = 0;
+        for (const tm of data.data) {
+          tm.tests = [];
+          tm.before = [];
+          tm.after = [];
+          tm.beforeEach = [];
+          tm.afterEach = [];
+          testModules.push(tm);
+          await import(new URL(tm.url, import.meta.url));
+        }
 
-      displayTests();
-      ws.send(JSON.stringify({ action: "ready" }));
-    }
+        displayTests();
+        ws.send(JSON.stringify({ action: "ready" }));
+      }
+      break;
     case "run": {
       await runTestModules();
     }
@@ -108,12 +110,13 @@ async function runTest(parent, tm, test) {
  * run serial tests before all others
  */
 async function runTestModule(tm) {
-
   tm.logs = [];
 
   const t = {
     context: {},
-    log(...args) { tm.logs.push(args); }
+    log(...args) {
+      tm.logs.push(args);
+    }
   };
 
   await execHooks(tm.before, t);
@@ -173,7 +176,7 @@ function testContext(def, parentContext) {
           }
           if (expectation.message !== undefined) {
             const slot = "message";
-            if ( expectation.message instanceof RegExp) {
+            if (expectation.message instanceof RegExp) {
               if (!expectation.message.test(e.message)) {
                 def.assertions.push({
                   passed: false,
@@ -260,7 +263,9 @@ function testContext(def, parentContext) {
     ...parentContext,
     teardowns: [],
     title: def.title,
-    log(...args) { def.logs.push(args); },
+    log(...args) {
+      def.logs.push(args);
+    },
 
     plan(count) {
       this.planned = count;
