@@ -168,6 +168,16 @@ function testContext(def, parentContext) {
           }
           if (expectation.message !== undefined) {
             const slot = "message";
+            if ( expectation.message instanceof RegExp) {
+              if (!expectation.message.test(e.message)) {
+                def.assertions.push({
+                  passed: false,
+                  message: `${slot} does not match ${expectation[slot]}`,
+                  title
+                });
+                return;
+              }
+            }
 
             if (typeof expectation.message === "string") {
               if (expectation[slot] !== e[slot]) {
