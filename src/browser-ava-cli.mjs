@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join, dirname, resolve } from "node:path";
 import { init, parse } from "es-module-lexer";
-import { chromium } from "playwright";
+import { chromium, firefox, webkit } from "playwright";
 import Koa from "koa";
 import Static from "koa-static";
 import { WebSocketServer } from "ws";
@@ -19,6 +19,8 @@ const { version, description } = JSON.parse(
   )
 );
 
+const browsers = [];
+
 program
   .description(description)
   .version(version)
@@ -33,8 +35,24 @@ program
     "keep browser-ava and the page open after execution",
     true
   )
+  .option("--webkit", "run test against webkit browser", () =>
+    browsers.push(webkit)
+  )
+  .option("--firefox", "run test against firefox browser", () =>
+    browsers.push(firefox)
+  )
+  .option("--chromium", "run test against chromium browser", () =>
+    browsers.push(chromium)
+  )
   .argument("<tests...>")
   .action(async (tests, options) => {
+    if (browsers.length === 0) {
+      console.error(
+        "No browsers selected use --webkit, --chromium and/or --firefox"
+      );
+      process.exit(2);
+    }
+
     await init;
 
     tests = tests.map(file => {
@@ -79,9 +97,13 @@ program
       );
     });
 
-    const browser = await chromium.launch({ headless: options.headless });
-    const page = await browser.newPage();
-    await page.goto(`http://localhost:${options.port}/index.html`);
+    await Promise.all(
+      browsers.map(async b => {
+        const browser = await b.launch({ headless: options.headless });
+        const page = await browser.newPage();
+        await page.goto(`http://localhost:${options.port}/index.html`);
+      })
+    );
   });
 
 program.parse(process.argv);
