@@ -31,10 +31,14 @@ export function summaryMessages(summary) {
     return number > 1 ? word + "s" : word;
   }
 
-  function message(number,word, template) {
+  function message(number, word, template) {
     if (number >= 1) {
-      messages.push(template.replace(/{number}/,number).replace(/{word}/,pluralize(word, number)));
-    }  
+      messages.push(
+        template
+          .replace(/{number}/, number)
+          .replace(/{word}/, pluralize(word, number))
+      );
+    }
   }
 
   message(summary.failed, "test", "{number} {word} failed");
