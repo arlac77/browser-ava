@@ -108,12 +108,12 @@ async function runTest(parent, tm, test) {
  * run serial tests before all others
  */
 async function runTestModule(tm) {
+
+  tm.logs = [];
+
   const t = {
     context: {},
-    logs: [],
-    log(...args) {
-      this.logs.push(args);
-    },
+    log(...args) { tm.logs.push(args); }
   };
 
   await execHooks(tm.before, t);
@@ -139,6 +139,7 @@ async function runTestModules() {
 
 function testContext(def, parentContext) {
   def.assertions = [];
+  def.logs = [];
 
   const assertions = {
     pass(title) {
@@ -259,6 +260,7 @@ function testContext(def, parentContext) {
     ...parentContext,
     teardowns: [],
     title: def.title,
+    log(...args) { def.logs.push(args); },
 
     plan(count) {
       this.planned = count;
