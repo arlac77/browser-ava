@@ -20,6 +20,7 @@ const { version, description } = JSON.parse(
 );
 
 const browsers = [];
+let openBrowsers = [];
 
 program
   .description(description)
@@ -81,7 +82,7 @@ program
             console.log(`${todo} tests todo`);
 
             if (!options.keepOpen) {
-              await browser.close();
+              await Promise.all(openBrowsers.map(browser=>browser.close()));
               server.close();
               process.exit(failed ? 1 : 0);
             }
@@ -97,11 +98,12 @@ program
       );
     });
 
-    await Promise.all(
+    openBrowsers = await Promise.all(
       browsers.map(async b => {
         const browser = await b.launch({ headless: options.headless });
         const page = await browser.newPage();
         await page.goto(`http://localhost:${options.port}/index.html`);
+        return browser;
       })
     );
   });
