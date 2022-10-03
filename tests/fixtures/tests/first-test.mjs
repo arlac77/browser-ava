@@ -4,6 +4,10 @@ import { foo } from "./foo.mjs";
 import { bar } from "bar";
 import { baz } from "baz";
 
+function wait(ms=1000) {
+  return new Promise((resolve,reject)=>setTimeout(resolve,ms));
+}
+
 test.before(t => {
   console.log("before");
 });
@@ -27,7 +31,8 @@ test("test.1", t => {
   t.is(baz(), "baz");
 });
 
-test("test.2", t => {
+test("test.2", async t => {
+  await wait(1000);
   t.true(1 === 2, "assert title 2");
 });
 
