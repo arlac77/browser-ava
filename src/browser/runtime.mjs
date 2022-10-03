@@ -177,6 +177,14 @@ function testContext(def, parentContext) {
         title
       });
     },
+    not(a, b, title) {
+      def.assertions.push({
+        passed: !Object.is(a, b),
+        message: `${a} = ${b}`,
+        title
+      });
+    },
+
     true(value, title) {
       def.assertions.push({
         passed: value === true,
