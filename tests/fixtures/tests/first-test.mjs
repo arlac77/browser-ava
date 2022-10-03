@@ -4,8 +4,8 @@ import { foo } from "./foo.mjs";
 import { bar } from "bar";
 import { baz } from "baz";
 
-function wait(ms=1000) {
-  return new Promise((resolve,reject)=>setTimeout(resolve,ms));
+function wait(ms = 1000) {
+  return new Promise((resolve, reject) => setTimeout(resolve, ms));
 }
 
 test.before(t => {
@@ -28,7 +28,7 @@ test("test.1", t => {
   t.is(foo(), "foo");
   t.is(bar(), "bar");
   t.is(baz(), "baz");
-  t.not(1,2);
+  t.not(1, 2);
 });
 
 test("test.2", async t => {
@@ -40,6 +40,33 @@ test("test.throws", t => {
   t.throws(() => {
     throw new Error("must throw");
   });
+
+  t.throws(
+    () => {
+      throw new Error("must throw");
+    },
+    { message: "must throw" }
+  );
+
+  t.throws(
+    () => {
+      throw new Error("must throw");
+    },
+    { message: /must/ }
+  );
+  t.throws(
+    () => {
+      throw new Error("must throw");
+    },
+    { message: m => m.length > 0 }
+  );
+
+  t.throws(
+    () => {
+      throw new TypeError("🦄");
+    },
+    { instanceOf: TypeError, message: "🦄" }
+  );
 });
 
 test("test.empty", t => {});

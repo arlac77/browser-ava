@@ -155,7 +155,7 @@ function testContext(def, parentContext) {
       def.assertions.push({ passed: false, title });
     },
 
-    throws(a, title) {
+    throws(a, expectation, title) {
       try {
         a();
         def.assertions.push({
@@ -164,6 +164,33 @@ function testContext(def, parentContext) {
           message: "Expected exception to be thrown"
         });
       } catch (e) {
+        if (expectation !== undefined) {
+          for (const slot of ["name", "code", "is"]) {
+            if (expectation[slot] !== undefined) {
+              if (expectation[slot] !== e[slot]) {
+                def.assertions.push({
+                  passed: false,
+                  message: `expected ${slot}=${expectation[slot]} but got ${e[slot]}`,
+                  title
+                });
+                return;
+              }
+            }
+          }
+          if(expectation.message !== undefined) {
+            if(typeof expectation.message === 'string') {
+              const slot = 'message';
+              if (expectation[slot] !== e[slot]) {
+                def.assertions.push({
+                  passed: false,
+                  message: `expected ${slot}=${expectation[slot]} but got ${e[slot]}`,
+                  title
+                });
+                return;
+              }
+            }
+          }
+        }
         def.assertions.push({ passed: true, title });
       }
     },
