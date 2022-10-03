@@ -35,13 +35,13 @@ program
     "keep browser-ava and the page open after execution",
     true
   )
-  .option("--webkit", "run test against webkit browser", () =>
+  .option("--webkit", "run tests against webkit browser", () =>
     browsers.push(webkit)
   )
-  .option("--firefox", "run test against firefox browser", () =>
+  .option("--firefox", "run tests against firefox browser", () =>
     browsers.push(firefox)
   )
-  .option("--chromium", "run test against chromium browser", () =>
+  .option("--chromium", "run tests against chromium browser", () =>
     browsers.push(chromium)
   )
   .argument("<tests...>")
