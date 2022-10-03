@@ -8,6 +8,7 @@ import Koa from "koa";
 import Static from "koa-static";
 import { WebSocketServer } from "ws";
 import { program, Option } from "commander";
+import { calculateSummary } from "./browser/util.mjs";
 
 const utf8EncodingOptions = { encoding: "utf8" };
 
@@ -54,11 +55,12 @@ program
             break;
           case "result":
             console.log(">result");
-            //    console.log(JSON.stringify(data.data, undefined, 2));
-            const failed = data.data.find(f =>
-              f.tests.find(t => t.passed === false)
-            );
-            console.log(failed ? "failed" : "passed");
+
+            const { failed, knownFailure, todo } = calculateSummary(data.data);
+
+            console.log(`${failed} tests failed`);
+            console.log(`${knownFailure} known failure`);
+            console.log(`${todo} tests todo`);
 
             if (!options.keepOpen) {
               await browser.close();

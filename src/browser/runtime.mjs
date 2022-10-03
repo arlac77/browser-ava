@@ -1,4 +1,5 @@
 import { testModules } from "./ava.mjs";
+import { calculateSummary } from "./util.mjs";
 
 let ws = new WebSocket(`ws://${location.host}`);
 ws.onerror = console.error;
@@ -51,30 +52,10 @@ async function displayTests() {
   }
 
   const tests = document.getElementById("tests");
-
   tests.innerHTML = "<ul>" + testModules.map(renderModule).join("\n") + "</ul>";
 
-  let failed = 0,
-    knownFailure = 0,
-    todo = 0;
-
-  for (const tm of testModules) {
-    for (const test of tm.tests) {
-      if (test.todo) {
-        todo++;
-      } else {
-        if (!test.passed) {
-          if (test.failing) {
-            knownFailure++;
-          } else {
-            failed++;
-          }
-        }
-      }
-    }
-  }
+  const { failed, knownFailure, todo } = calculateSummary(testModules);
   const summary = document.getElementById("summary");
-
   summary.innerHTML = `${failed} tests failed<br/>${knownFailure} known failure<br/>${todo} tests todo`;
 }
 
