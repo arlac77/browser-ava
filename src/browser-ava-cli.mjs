@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
+import { join, dirname, resolve } from "node:path";
 import { init, parse } from "es-module-lexer";
 import { chromium } from "playwright";
 import Koa from "koa";
@@ -89,22 +90,77 @@ program
 
 program.parse(process.argv);
 
+const importmap = {
+  ava: "../ava.mjs"
+};
+
+function entryPoint(pkg, path) {
+  if (pkg.exports) {
+    for (const slot of ["browser", "."]) {
+      if (pkg.exports[slot]) {
+        return join(path, pkg.exports[slot]);
+      }
+    }
+  }
+  return join(path, pkg.index || "index.js");
+}
+
+async function resolveImport(name, file) {
+  if (name.match(/^[\/\.]/)) {
+    return resolve(dirname(file), name);
+  } else {
+    let { pkg, path } = await loadPackage(file);
+
+    if (name === pkg.name) {
+      return entryPoint(pkg, path);
+    }
+
+    path = join(path, "node_modules", name);
+    pkg = JSON.parse(
+      await readFile(join(path, "package.json"), utf8EncodingOptions)
+    );
+    return entryPoint(pkg, path);
+  }
+
+  return name;
+}
+
+async function loadPackage(path) {
+  while (path.length) {
+    try {
+      return {
+        path,
+        pkg: JSON.parse(
+          await readFile(join(path, "package.json"), utf8EncodingOptions)
+        )
+      };
+    } catch (e) {
+      if (e.code === "ENOTDIR" || e.code === "ENOENT") {
+      } else {
+        throw e;
+      }
+    }
+
+    path = dirname(path);
+  }
+}
+
 async function loadAndRewriteImports(file) {
   let body = await readFile(file, utf8EncodingOptions);
 
   const [imports] = parse(body);
 
-  const importmap = {
-    "ava" : "../ava.mjs"
-  };
+  let d = 0;
 
-  for(const i of imports) {
-    const m = importmap[i.n];
-    if(m) {
-      body = body.substring(0,i.s) + m + body.substring(i.e);
+  for (const i of imports) {
+    let m = importmap[i.n];
+
+    if (!m) {
+      m = await resolveImport(i.n, resolve(process.cwd(), file));
     }
-    else {
-      console.log("unknown import", i.n);
+    if (m) {
+      body = body.substring(0, i.s + d) + m + body.substring(i.e + d);
+      d += m.length - i.n.length;
     }
   }
 
@@ -121,12 +177,6 @@ async function createServer(tests, options) {
   app.use(async (ctx, next) => {
     const path = ctx.request.path;
 
-    if(path === "/testcases/foo.mjs") {
-      ctx.response.type = "text/javascript";
-      ctx.body = await loadAndRewriteImports('tests/fixtures/tests/foo.mjs');
-      return;
-    }
-
     if (path.startsWith(TESTCASES)) {
       for (const t of tests) {
         if (t.url === path) {
@@ -136,6 +186,10 @@ async function createServer(tests, options) {
         }
       }
     }
+
+    ctx.response.type = "text/javascript";
+    ctx.body = await loadAndRewriteImports(path);
+
     await next();
   });
 
