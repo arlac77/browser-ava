@@ -288,12 +288,13 @@ function testContext(def, parentContext) {
     ])
   );
 
+
   return {
     ...assertions,
     ...skippableAssertions,
     ...parentContext,
     teardowns: [],
-    title: def.body.title ? def.body.title(def.title, ...def.args) : def.title,
+    title: def.title,
     log(...args) {
       def.logs.push(args);
     },

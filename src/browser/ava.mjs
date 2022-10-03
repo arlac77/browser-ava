@@ -7,13 +7,17 @@ export const testModules = [];
  * Collect all tests into testModules
  */
 export default function test(body, ...args) {
-  let extra = {};
-  if(typeof body === 'string') {
-    extra.title = body;
+  let title;
+  if (typeof body === "string") {
+    title = body;
     body = args.shift();
   }
 
-  const def = { ...extra, body, args };
+  if (body.title) {
+    title = body.title(title, ...args);
+  }
+
+  const def = { title, body, args };
   testModules.at(-1).tests.push(def);
   return def;
 }
