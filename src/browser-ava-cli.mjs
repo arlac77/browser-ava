@@ -108,21 +108,18 @@ function entryPoint(pkg, path) {
 async function resolveImport(name, file) {
   if (name.match(/^[\/\.]/)) {
     return resolve(dirname(file), name);
-  } else {
-    let { pkg, path } = await loadPackage(file);
+  }
+  let { pkg, path } = await loadPackage(file);
 
-    if (name === pkg.name) {
-      return entryPoint(pkg, path);
-    }
-
-    path = join(path, "node_modules", name);
-    pkg = JSON.parse(
-      await readFile(join(path, "package.json"), utf8EncodingOptions)
-    );
+  if (name === pkg.name) {
     return entryPoint(pkg, path);
   }
 
-  return name;
+  path = join(path, "node_modules", name);
+  pkg = JSON.parse(
+    await readFile(join(path, "package.json"), utf8EncodingOptions)
+  );
+  return entryPoint(pkg, path);
 }
 
 async function loadPackage(path) {
@@ -135,8 +132,7 @@ async function loadPackage(path) {
         )
       };
     } catch (e) {
-      if (e.code === "ENOTDIR" || e.code === "ENOENT") {
-      } else {
+      if (e.code !== "ENOTDIR" && e.code !== "ENOENT") {
         throw e;
       }
     }
