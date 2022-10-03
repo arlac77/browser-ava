@@ -50,6 +50,9 @@ test.after = (...args) => {
   testModules.at(-1).after.push(def);
   return def;
 };
+test.after.always = (...args) => {
+  test.after(...args).always = true;
+};
 
 test.serial.after = (...args) => {
   test.after(...args).serial = true;
