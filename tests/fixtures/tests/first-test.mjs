@@ -29,6 +29,7 @@ test("test.1", t => {
   t.is(bar(), "bar");
   t.is(baz(), "baz");
   t.not(1, 2);
+  t.deepEqual([1, { a: 1 }], [1, { a: 1 }]);
 });
 
 test("test.2", async t => {

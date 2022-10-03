@@ -1,5 +1,6 @@
 import { testModules } from "./ava.mjs";
 import { calculateSummary, summaryMessages } from "./util.mjs";
+import { isEqual } from "./eql.mjs";
 
 let ws = new WebSocket(`ws://${location.host}`);
 ws.onerror = console.error;
@@ -47,7 +48,7 @@ async function displayTests() {
       t.assertions
         ? t.assertions
             .filter(a => !a.passed)
-            .map(a => a.title + " " + a.message)
+            .map(a => (a.title || "") + " " + (a.message || ""))
             .join(" ")
         : ""
     }</span>${t.message ? t.message : ""}</li>`;
@@ -62,7 +63,9 @@ async function displayTests() {
   const tests = document.getElementById("tests");
   tests.innerHTML = "<ul>" + testModules.map(renderModule).join("\n") + "</ul>";
 
-  document.getElementById("summary").innerHTML=summaryMessages(calculateSummary(testModules)).join('<br/>');
+  document.getElementById("summary").innerHTML = summaryMessages(
+    calculateSummary(testModules)
+  ).join("<br/>");
 }
 
 async function execHooks(hooks, t) {
@@ -147,7 +150,7 @@ function testContext(def, parentContext) {
       def.assertions.push({ passed: true, title });
     },
     fail(title) {
-      def.assertions.push({ passed: false, title });
+      def.assertions.push({ passed: false, title, message: 'Test failed via `t.fail()`' });
     },
 
     throws(a, expectation, title) {
@@ -201,7 +204,11 @@ function testContext(def, parentContext) {
       }
     },
     deepEqual(a, b, title) {
-      def.assertions.push({ passed: a === b, message: `${a} != ${b}`, title });
+      def.assertions.push({
+        passed: isEqual(a, b),
+        message: `${a} != ${b}`,
+        title
+      });
     },
     is(a, b, title) {
       def.assertions.push({
