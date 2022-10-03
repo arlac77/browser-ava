@@ -85,6 +85,12 @@ test("test.fail", t => {
   t.fail();
 });
 
+function template(t, a, b) {
+  t.is(a, b);
+}
+
+test("test.template", template, 1, 2);
+
 test.serial("test.serial.1", t => {
   t.true(1 === 1);
 });
