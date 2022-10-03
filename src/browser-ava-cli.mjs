@@ -125,16 +125,20 @@ async function resolveImport(name, file) {
     return entryPoint(pkg, path);
   }
 
-  try {
-    path = join(path, "node_modules", name);
-    pkg = JSON.parse(
-      await readFile(join(path, "package.json"), utf8EncodingOptions)
-    );
-    return entryPoint(pkg, path);
-  } catch (e) {
-    if (e.code !== "ENOTDIR" && e.code !== "ENOENT") {
-      throw e;
+  while (path.length > 1) {
+    let p;
+    try {
+      p = join(path, "node_modules", name);
+      pkg = JSON.parse(
+        await readFile(join(p, "package.json"), utf8EncodingOptions)
+      );
+      return entryPoint(pkg, p);
+    } catch (e) {
+      if (e.code !== "ENOTDIR" && e.code !== "ENOENT") {
+        throw e;
+      }
     }
+    path = dirname(path);
   }
 }
 
