@@ -184,10 +184,24 @@ function testContext(def, parentContext) {
         title
       });
     },
+    truthy(value, title) {
+      def.assertions.push({
+        passed: value ? true : false,
+        message: `${value} is not truthy`,
+        title
+      });
+    },
     false(value, title) {
       def.assertions.push({
         passed: value === false,
         message: `${value} != false`,
+        title
+      });
+    },
+    falsy(value, title) {
+      def.assertions.push({
+        passed: value ? false : true,
+        message: `${value} is not falsy`,
         title
       });
     }
