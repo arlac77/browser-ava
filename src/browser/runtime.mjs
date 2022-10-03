@@ -151,9 +151,15 @@ function testContext(def, parentContext) {
       def.assertions.push({ passed: false, title });
     },
 
-    throws(a, title) {},
+    throws(a, title) {
+      try {
+        a();
+      } catch (e) {
+        def.assertions.push({ passed: true, title });
+      }
+    },
     deepEqual(a, b, title) {
-      def.assertions.push({ passed: a === b, message, title });
+      def.assertions.push({ passed: a === b, message: `${a} != ${b}`, title });
     },
     is(a, b, title) {
       def.assertions.push({
