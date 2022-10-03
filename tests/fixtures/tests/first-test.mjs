@@ -73,6 +73,7 @@ test("test.empty", t => {});
 test("test.plan", t => {
   t.plan(2);
   t.true(1 === 1);
+  t.true.skip(1 === 2);
 });
 
 test("test.pass", t => {

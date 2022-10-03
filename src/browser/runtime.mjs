@@ -130,24 +130,7 @@ async function runTestModules() {
 function testContext(def, parentContext) {
   def.assertions = [];
 
-  return {
-    ...parentContext,
-    teardowns: [],
-    logs: [],
-    title: def.title,
-
-    log(...args) {
-      this.logs.push(args);
-    },
-    plan(count) {
-      this.planned = count;
-    },
-    teardown(fn) {
-      this.teardowns.push(fn);
-    },
-    timeout(ms) {},
-
-    // assertions
+  const assertions = {
     pass(title) {
       def.assertions.push({ passed: true, title });
     },
@@ -177,9 +160,9 @@ function testContext(def, parentContext) {
               }
             }
           }
-          if(expectation.message !== undefined) {
-            if(typeof expectation.message === 'string') {
-              const slot = 'message';
+          if (expectation.message !== undefined) {
+            if (typeof expectation.message === "string") {
+              const slot = "message";
               if (expectation[slot] !== e[slot]) {
                 def.assertions.push({
                   passed: false,
@@ -240,5 +223,32 @@ function testContext(def, parentContext) {
         title
       });
     }
+  };
+
+  const skippableAssertions = Object.fromEntries(
+    Object.keys(assertions).map(name => [
+      `${name}.skip`,
+      () => def.assertions.push({ skipped: true })
+    ])
+  );
+
+  return {
+    ...assertions,
+    ...skippableAssertions,
+    ...parentContext,
+    teardowns: [],
+    logs: [],
+    title: def.title,
+
+    log(...args) {
+      this.logs.push(args);
+    },
+    plan(count) {
+      this.planned = count;
+    },
+    teardown(fn) {
+      this.teardowns.push(fn);
+    },
+    timeout(ms) {}
   };
 }
