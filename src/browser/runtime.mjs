@@ -31,7 +31,7 @@ ws.onmessage = async message => {
         }
 
         displayTests();
-        if(errors === 0) {
+        if (errors === 0) {
           ws.send(JSON.stringify({ action: "ready" }));
         }
       }
@@ -66,9 +66,9 @@ async function displayTests() {
   }
 
   function renderModule(tm) {
-    return `<li id="${tm.file}">${tm.file}<br/>${tm.logs.join('<br/>')}<ul>${tm.tests
-      .map(renderTest)
-      .join("\n")}</ul></li>`;
+    return `<li id="${tm.file}">${tm.file}<br/>${tm.logs.join(
+      "<br/>"
+    )}<ul>${tm.tests.map(renderTest).join("\n")}</ul></li>`;
   }
 
   const tests = document.getElementById("tests");
@@ -211,6 +211,21 @@ function testContext(def, parentContext) {
       });
     },
 
+    throws(a, expectation, title) {
+      try {
+        a();
+        def.assertions.push({
+          passed: false,
+          title,
+          message: "Expected exception to be thrown"
+        });
+      } catch (e) {
+        if (throwsExpectationHandler(expectation, title)) {
+          def.assertions.push({ passed: true, title });
+        }
+      }
+    },
+
     async throwsAsync(a, expectation, title) {
       try {
         await a();
@@ -226,20 +241,30 @@ function testContext(def, parentContext) {
       }
     },
 
-    throws(a, expectation, title) {
+    notThrows(a, title) {
       try {
         a();
+      } catch (e) {
         def.assertions.push({
           passed: false,
           title,
-          message: "Expected exception to be thrown"
+          message: `Unexpected exception ${e}`
         });
-      } catch (e) {
-        if (throwsExpectationHandler(expectation, title)) {
-          def.assertions.push({ passed: true, title });
-        }
       }
     },
+
+    async notThrowsAsync(a, title) {
+      try {
+        await a();
+      } catch (e) {
+        def.assertions.push({
+          passed: false,
+          title,
+          message: `Unexpected exception ${e}`
+        });
+      }
+    },
+
     deepEqual(a, b, title) {
       def.assertions.push({
         passed: isEqual(a, b),
@@ -247,6 +272,27 @@ function testContext(def, parentContext) {
         title
       });
     },
+    notDeepEqual(a, b, title) {
+      def.assertions.push({
+        passed: !isEqual(a, b),
+        message: `${a} = ${b}`,
+        title
+      });
+    },
+
+    regex(contents, regex, message) {
+      def.assertions.push({
+        passed: contents.match(regex) ? true : false,
+        message: `${contents} matches ${regex}`
+      });
+    },
+    notRegex(contents, regex, message) {
+      def.assertions.push({
+        passed: contents.match(regex) ? false : true,
+        message: `${contents} matches ${regex}`
+      });
+    },
+
     is(a, b, title) {
       def.assertions.push({
         passed: Object.is(a, b),

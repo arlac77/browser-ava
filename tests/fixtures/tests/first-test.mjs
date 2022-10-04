@@ -32,8 +32,12 @@ test("test.resolv", t => {
 
 test("test.kitchensink", t => {
   t.log("1st. assertion is coming soon");
+  t.is(1, 1);
   t.not(1, 2);
   t.deepEqual([1, { a: 1 }], [1, { a: 1 }]);
+  t.notDeepEqual([1, { a: 1 }], [1, { a: 2 }]);
+  t.regex("foo", /o/);
+  t.notRegex("foo", /bar/);
 });
 
 test("test.2", async t => {
@@ -74,10 +78,13 @@ test("test.throws", t => {
   );
 });
 
-test('test.throwsAsync', async t => {
-	await t.throwsAsync(async () => {
-		throw new TypeError('🦄');
-	}, {instanceOf: TypeError, message: '🦄'});
+test("test.throwsAsync", async t => {
+  await t.throwsAsync(
+    async () => {
+      throw new TypeError("🦄");
+    },
+    { instanceOf: TypeError, message: "🦄" }
+  );
 });
 
 test("test.empty", t => {});
@@ -102,7 +109,7 @@ function template(t, a, b) {
 template.title = (title, a, b) => `test.template ${a}<>${b}`;
 
 test("test.template", template, 1, 2);
-test(template, 1, 2);
+test(template, 2, 3);
 
 test.serial("test.serial.1", t => {
   t.true(1 === 1);
