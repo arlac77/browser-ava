@@ -105,14 +105,18 @@ program
 program.parse(process.argv);
 
 function entryPoint(pkg, path) {
-  if (pkg.exports) {
-    for (const slot of ["browser", "."]) {
-      if (pkg.exports[slot]) {
-        return join(path, pkg.exports[slot]);
+  switch (typeof pkg.exports) {
+    case "string":
+      return join(path, pkg.exports);
+    case "object":
+      for (const slot of ["browser", "import", ".", "default"]) {
+        if (pkg.exports[slot]) {
+          return join(path, pkg.exports[slot]);
+        }
       }
-    }
   }
-  return join(path, pkg.index || "index.js");
+
+  return join(path, pkg.main || "index.js");
 }
 
 async function resolveImport(name, file) {
@@ -183,8 +187,7 @@ async function loadAndRewriteImports(file) {
     if (m) {
       body = body.substring(0, i.s + d) + m + body.substring(i.e + d);
       d += m.length - i.n.length;
-    }
-    else {
+    } else {
       console.warn(`Unable to resolve "${i.n}" may lead to import errors`);
     }
   }
