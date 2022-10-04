@@ -9,6 +9,7 @@ function wait(ms = 1000) {
 }
 
 test.before(t => {
+  t.context.a = "a";
   t.log("before");
 });
 test.after(t => {
@@ -21,6 +22,10 @@ test.beforeEach(t => {
 });
 test.afterEach("test.afterEach", t => {
   t.log("afterEach", t.title);
+});
+
+test("test.context", t => {
+  t.is(t.context.a, "a");
 });
 
 test("test.resolv", t => {
