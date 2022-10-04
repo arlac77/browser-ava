@@ -98,6 +98,10 @@ async function runTest(parent, tm, test) {
 
       await test.body(t, ...test.args);
 
+      for (const td of t.teardowns.reverse()) {
+        await td();
+      }
+
       await execHooks(tm.afterEach, t);
 
       if (test.assertions.length === 0) {

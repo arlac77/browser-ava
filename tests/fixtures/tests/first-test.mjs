@@ -45,6 +45,13 @@ test("test.2", async t => {
   t.true(1 === 2, "assert title 2");
 });
 
+test("test.teardown", async t => {
+  t.teardown(() => {
+    t.log("teardown");
+  });
+  t.true(true);
+});
+
 test("test.throws", t => {
   t.throws(() => {
     throw new Error("must throw");
