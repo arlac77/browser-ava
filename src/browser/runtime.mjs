@@ -5,6 +5,20 @@ import { isEqual } from "./eql.mjs";
 let ws = new WebSocket(`ws://${location.host}`);
 ws.onerror = console.error;
 
+/*
+ forward console info,log,error to the server
+ */
+for (const slot of ["log", "info", "error"]) {
+  const former = console[slot];
+
+  console[slot] = (...args) => {
+    if (ws) {
+      ws.send(JSON.stringify({ action: slot, data: args }));
+    }
+    former(...args);
+  };
+}
+
 ws.onmessage = async message => {
   const data = JSON.parse(message.data);
   switch (data.action) {
@@ -24,9 +38,8 @@ ws.onmessage = async message => {
             await import(new URL(tm.url, import.meta.url));
           } catch (e) {
             errors++;
-            console.error(e);
+            console.error(e.toString());
             tm.logs.push(`error importing ${tm.url} ${e}`);
-            ws.send(JSON.stringify({ action: "error", data: e }));
           }
         }
 

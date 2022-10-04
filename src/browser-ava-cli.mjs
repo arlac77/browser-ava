@@ -62,10 +62,33 @@ program
 
     const { server, wss } = await createServer(tests, options);
 
+    async function shutdown(summary, force) {
+      if (!options.keepOpen || force) {
+        await Promise.all(openBrowsers.map(browser => browser.close()));
+        server.close();
+        process.exit(force ? 2 : summary.failed ? 1 : 0);
+      }
+    }
+
+    let errors = 0;
+
     wss.on("connection", ws => {
       ws.on("message", async data => {
         data = JSON.parse(data);
         switch (data.action) {
+          case "info":
+            console.info(...data.data);
+            break;
+          case "log":
+            console.log(...data.data);
+            break;
+          case "error":
+            errors++;
+            console.error(...data.data);
+            await shutdown(undefined, true);
+
+            break;
+
           case "ready":
             ws.send(JSON.stringify({ action: "run" }));
             break;
@@ -76,11 +99,7 @@ program
               console.log(m);
             }
 
-            if (!options.keepOpen) {
-              await Promise.all(openBrowsers.map(browser => browser.close()));
-              server.close();
-              process.exit(summary.failed ? 1 : 0);
-            }
+            await shutdown(summary);
         }
       });
 
