@@ -18,3 +18,15 @@ If your code does not depend on any node api (process, fs, ...) then this runner
 ```console
 browser-ava --webkit --chromium --firefox tests/*.mjs
 ```
+
+
+## limitations
+
+- only supports ESM
+
+
+## install
+
+```console
+npm -g install browser-ava
+```
