@@ -35,7 +35,7 @@ test("cli mixed result", async t => {
     );
   } catch (p) {
     t.is(p.exitCode, 1);
-    t.regex(p.all, /6 tests failed/);
+    t.regex(p.all, /5 tests failed/);
     t.regex(p.all, /1 known failure/);
     t.regex(p.all, /2 tests todo/);
   }

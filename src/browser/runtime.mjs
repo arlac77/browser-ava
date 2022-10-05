@@ -150,7 +150,7 @@ async function runTest(parent, tm, test) {
         test.passed = false;
         test.message = "Test finished without running any assertions";
       } else {
-        test.passed = !test.assertions.find(a => a.passed !== true);
+        test.passed = !test.assertions.find(a => a.passed !== true && !a.skipped);
 
         if (t.planned !== undefined && t.planned !== test.assertions.length) {
           test.passed = false;
