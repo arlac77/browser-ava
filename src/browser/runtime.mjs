@@ -384,16 +384,12 @@ function testContext(def, parentContext) {
     }
   };
 
-  const skippableAssertions = Object.fromEntries(
-    Object.keys(assertions).map(name => [
-      `${name}.skip`,
-      () => def.assertions.push({ skipped: true })
-    ])
+  Object.values(assertions).forEach(
+    assertion => (assertion.skip = () => def.assertions.push({ skipped: true }))
   );
 
   return {
     ...assertions,
-    ...skippableAssertions,
     ...parentContext,
     teardowns: [],
     title: def.title,
