@@ -19,8 +19,21 @@ const { version, description } = JSON.parse(
   )
 );
 
+const knownBrowsers = {
+  chromium: chromium,
+  firefox: firefox,
+  webkit: webkit,
+  safari: webkit
+};
+
 const browsers = [];
 let openBrowsers = [];
+
+Object.entries(knownBrowsers).forEach(([name, browser]) => {
+  program.option(`--${name}`, `run tests against ${name} browser`, () =>
+    browsers.push(browser)
+  );
+});
 
 program
   .description(description)
@@ -30,23 +43,21 @@ program
       .default(8080)
       .env("PORT")
   )
+  .addOption(
+    new Option("-b, --browser <name>", "browser to use").env("BROWSER")
+  )
   .option("--headless", "hide browser window", false)
   .option(
     "--no-keep-open",
     "keep browser-ava and the page open after execution",
     true
   )
-  .option("--webkit", "run tests against webkit browser", () =>
-    browsers.push(webkit)
-  )
-  .option("--firefox", "run tests against firefox browser", () =>
-    browsers.push(firefox)
-  )
-  .option("--chromium", "run tests against chromium browser", () =>
-    browsers.push(chromium)
-  )
   .argument("<tests...>")
   .action(async (tests, options) => {
+    if (options.browser) {
+      browsers.push(knownBrowsers[options.browser]);
+    }
+
     if (browsers.length === 0) {
       console.error(
         "No browsers selected use --webkit, --chromium and/or --firefox"
