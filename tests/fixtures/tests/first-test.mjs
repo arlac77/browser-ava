@@ -39,7 +39,34 @@ test("test.kitchensink", t => {
   t.log("1st. assertion is coming soon");
   t.is(1, 1);
   t.not(1, 2);
-  t.deepEqual([1, { a: 1 }], [1, { a: 1 }]);
+  t.deepEqual(
+    [
+      1,
+      {
+        string: "s",
+        number: 1,
+        null: null,
+        undefined: undefined,
+        data: new Date(1),
+        bigInt: 9007199254740991n,
+        map: new Map([["k", "v"]]),
+        set: new Set(["k"])
+      }
+    ],
+    [
+      1,
+      {
+        string: "s",
+        number: 1,
+        null: null,
+        undefined: undefined,
+        data: new Date(1),
+        bigInt: 9007199254740991n,
+        map: new Map([["k", "v"]]),
+        set: new Set(["k"])
+      }
+    ]
+  );
   t.notDeepEqual([1, { a: 1 }], [1, { a: 2 }]);
   t.regex("foo", /o/);
   t.notRegex("foo", /bar/);
