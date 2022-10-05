@@ -52,6 +52,8 @@ async function displayTests() {
         ? "passed"
         : t.passed === false
         ? "failed"
+        : t.skip
+        ? "skip"
         : t.todo
         ? "todo"
         : ""

@@ -2,11 +2,14 @@ export function calculateSummary(testModules) {
   let failed = 0,
     knownFailure = 0,
     todo = 0,
+    skip = 0,
     passed = 0;
 
   for (const tm of testModules) {
     for (const test of tm.tests) {
-      if (!test.skip) {
+      if (test.skip){
+        skip++;
+      } else {
         if (test.todo) {
           todo++;
         } else {
@@ -24,7 +27,7 @@ export function calculateSummary(testModules) {
     }
   }
 
-  return { passed, failed, knownFailure, todo };
+  return { passed, failed, knownFailure, skip, todo };
 }
 
 export function pluralize(word, number) {
@@ -50,6 +53,7 @@ export function summaryMessages(summary) {
   message(summary.passed, "test", "{number} {word} passed","passed");
   message(summary.failed, "test", "{number} {word} failed", "failed");
   message(summary.knownFailure, "failure", "{number} known {word}", "failed");
+  message(summary.skip, "test", "{number} {word} skipped", "skip");
   message(summary.todo, "test", "{number} {word} todo", "todo");
 
   return messages;
