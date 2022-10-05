@@ -1,11 +1,35 @@
 .passed {
-    background-color: green
+    color: #006100;
+    background-color: #c6efce;
 }
 
 .failed {
-    background-color: red
+    color: #9c0006;
+    background-color: #ffc7ce;
 }
 
 .todo {
-    background-color: yellow
+    color: #9c6500;
+    background-color: #ffeb9c;
+}
+#summary {
+    font-weight: bold;
+    padding: 20px 50px;
+}
+.hidePassed ~ ul>li.passed,
+.hidePassed>ul>li.passed {display: none;}
+.module{
+    cursor: pointer;
+}
+.module::marker {
+    content: "▼ ";//⮟
+}
+.module.hidePassed::marker {
+    content: "▶ ";//➤
+}
+li:has(>.module)::marker {
+    content: "▼ ";//⮟
+}
+li:has(>.module.hidePassed)::marker {
+    content: "▶ ";//➤
 }
