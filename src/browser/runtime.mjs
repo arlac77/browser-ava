@@ -1,5 +1,5 @@
 import { testModules } from "./ava.mjs";
-import { calculateSummary, summaryMessages } from "./util.mjs";
+import { calculateSummary, summaryMessages, pluralize } from "./util.mjs";
 import { isEqual } from "./eql.mjs";
 
 let ws = new WebSocket(`ws://${location.host}`);
@@ -60,11 +60,13 @@ async function displayTests() {
   run.onclick = runTestModules;
 
   function renderTest(t) {
-    return `<li class="${
+    return `<li class="test ${
       t.passed === true
         ? "passed"
         : t.passed === false
         ? "failed"
+        : t.skip
+        ? "skip"
         : t.todo
         ? "todo"
         : ""
@@ -79,17 +81,37 @@ async function displayTests() {
   }
 
   function renderModule(tm) {
-    return `<li id="${tm.file}">${tm.file}<br/>${tm.logs.join(
-      "<br/>"
-    )}<ul>${tm.tests.map(renderTest).join("\n")}</ul></li>`;
+    const passedTestsCount = tm.tests.filter(t=>t.passed).length;
+    const allTestsCount = tm.tests.length;
+    return `<li id="${tm.file}" class="module${passedTestsCount===allTestsCount?" passed":""}">
+      <span class="moduleName">${tm.file}</span>
+      <span class="moduleSummary"> ( ${passedTestsCount} / ${allTestsCount} ${pluralize("test",allTestsCount)} passed )</span>
+      <div class="logs">${tm.logs.join("<br/>")}</div>
+      <ul>${tm.tests.map(renderTest).join("\n")}</ul>
+      </li>`;
   }
 
   const tests = document.getElementById("tests");
-  tests.innerHTML = "<ul>" + testModules.map(renderModule).join("\n") + "</ul>";
+  tests.innerHTML = `<ul class="wrapper"><li>
+      <span class="all module">ALL TESTS</span>
+      <ul class="allTests">${ testModules.map(renderModule).join("\n") }</ul>
+      </li></ul>`;
+
+  tests.querySelectorAll('.module').forEach(elem=>{
+    elem.onclick = switchPassed;
+    manualSwitchPassed(elem);
+  });
+  function switchPassed(){
+    manualSwitchPassed(this);
+    console.log(this);
+  }
+  function manualSwitchPassed(elem){
+    elem.classList.toggle("hidePassed");
+  }
 
   document.getElementById("summary").innerHTML = summaryMessages(
     calculateSummary(testModules)
-  ).join("<br/>");
+  ).map(m=>m.html).join('');
 }
 
 async function execHooks(hooks, t) {
