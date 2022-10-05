@@ -96,7 +96,7 @@ program
             const summary = calculateSummary(data.data);
 
             for (const m of summaryMessages(summary)) {
-              console.log(m);
+              console.log(m.text);
             }
 
             await shutdown(summary);
