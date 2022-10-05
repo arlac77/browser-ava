@@ -1,7 +1,7 @@
 import test from "ava";
 
 import { foo } from "./foo.mjs";
-import { bar } from "bar";
+import { bar, internal } from "bar";
 import { baz, bazbay } from "baz";
 
 function wait(ms = 1000) {
@@ -33,6 +33,7 @@ test("test.resolv", t => {
   t.is(bar(), "bar");
   t.is(baz(), "baz");
   t.is(bazbay(), "bazbay");
+  t.is(internal(), "browser internal"); // differs between ava and browser-ava
 });
 
 test("test.kitchensink", t => {

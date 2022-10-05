@@ -147,6 +147,16 @@ async function resolveImport(name, file) {
   if (name === pkg.name) {
     return entryPoint(pkg, path);
   }
+  if (name.match(/^#/)) {
+    const n = pkg.imports[name];
+    if (n) {
+      for (const slot of ["browser", "default"]) {
+        if (n[slot]) {
+          return join(path, n[slot]);
+        }
+      }
+    }
+  }
 
   while (path.length > 1) {
     let p;

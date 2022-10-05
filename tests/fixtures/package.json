@@ -1,6 +1,12 @@
 {
-    "name" : "bar",
-    "exports" : {
-        "." : "./src/bar.mjs"
+  "name": "bar",
+  "exports": {
+    ".": "./src/bar.mjs"
+  },
+  "imports": {
+    "#internal.mjs": {
+      "browser": "./src/browser-internal.mjs",
+      "default": "./src/internal.mjs"
     }
+  }
 }
