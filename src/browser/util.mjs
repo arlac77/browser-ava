@@ -7,13 +7,13 @@ export function calculateSummary(testModules) {
 
   for (const tm of testModules) {
     for (const test of tm.tests) {
-      if (test.skip){
+      if (test.skip) {
         skip++;
       } else {
         if (test.todo) {
           todo++;
         } else {
-          if (test.passed){
+          if (test.passed) {
             passed++;
           } else {
             if (test.failing) {
@@ -36,21 +36,20 @@ export function pluralize(word, number) {
 export function summaryMessages(summary) {
   const messages = [];
 
-  function message(number, word, template, colorClass='') {
+  function message(number, word, template, colorClass = "") {
     if (number >= 1) {
-      const textContent = template
-          .replace(/{number}/, number)
-          .replace(/{word}/, pluralize(word, number));
+      const text = template
+        .replace(/{number}/, number)
+        .replace(/{word}/, pluralize(word, number));
       messages.push({
-            colorClass:colorClass,
-            text:textContent,
-            html:`<div class="${colorClass}">${textContent}</div>`
-
+        colorClass,
+        text,
+        html: `<div class="${colorClass}">${text}</div>`
       });
     }
   }
 
-  message(summary.passed, "test", "{number} {word} passed","passed");
+  message(summary.passed, "test", "{number} {word} passed", "passed");
   message(summary.failed, "test", "{number} {word} failed", "failed");
   message(summary.knownFailure, "failure", "{number} known {word}", "failed");
   message(summary.skip, "test", "{number} {word} skipped", "skip");
