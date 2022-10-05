@@ -8,7 +8,7 @@
     background-color: #ffc7ce;
 }
 
-.todo {
+.todo, .skip {
     color: #9c6500;
     background-color: #ffeb9c;
 }
