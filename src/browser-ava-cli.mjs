@@ -123,14 +123,26 @@ program
 
 program.parse(process.argv);
 
+/**
+ * Order in which imports are searched
+ * @see {https://nodejs.org/dist/latest/docs/api/packages.html#imports}
+ */
+const importsConditionOrder = ["browser", "default"];
+
+/**
+ * Order in which exports are searched
+ * @see {https://nodejs.org/dist/latest/docs/api/packages.html#exports}
+ */
+const exportsConditionOrder = ["browser", "import", ".", "default"];
+
 function entryPoint(pkg, path) {
   switch (typeof pkg.exports) {
     case "string":
       return join(path, pkg.exports);
     case "object":
-      for (const slot of ["browser", "import", ".", "default"]) {
-        if (pkg.exports[slot]) {
-          return join(path, pkg.exports[slot]);
+      for (const condition of exportsConditionOrder) {
+        if (pkg.exports[condition]) {
+          return join(path, pkg.exports[condition]);
         }
       }
   }
@@ -148,11 +160,11 @@ async function resolveImport(name, file) {
     return entryPoint(pkg, path);
   }
   if (name.match(/^#/)) {
-    const n = pkg.imports[name];
-    if (n) {
-      for (const slot of ["browser", "default"]) {
-        if (n[slot]) {
-          return join(path, n[slot]);
+    const importSlot = pkg.imports[name];
+    if (importSlot) {
+      for (const condition of importsConditionOrder) {
+        if (importSlot[condition]) {
+          return join(path, importSlot[condition]);
         }
       }
     }
