@@ -62,11 +62,11 @@ program
 
     const { server, wss } = await createServer(tests, options);
 
-    async function shutdown(summary, force) {
+    async function shutdown(failed, force) {
       if (!options.keepOpen || force) {
         await Promise.all(openBrowsers.map(browser => browser.close()));
         server.close();
-        process.exit(force ? 2 : summary.failed ? 1 : 0);
+        process.exit(force ? 2 : failed ? 1 : 0);
       }
     }
 
@@ -86,7 +86,6 @@ program
             errors++;
             console.error(...data.data);
             await shutdown(undefined, true);
-
             break;
 
           case "ready":
@@ -99,7 +98,7 @@ program
               console.log(m.text);
             }
 
-            await shutdown(summary);
+            await shutdown(summary.failed);
         }
       });
 
