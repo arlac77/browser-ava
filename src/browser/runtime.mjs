@@ -81,11 +81,16 @@ async function displayTests() {
   }
 
   function renderModule(tm) {
-    const passedTestsCount = tm.tests.filter(t=>t.passed).length;
+    const passedTestsCount = tm.tests.filter(t => t.passed).length;
     const allTestsCount = tm.tests.length;
-    return `<li id="${tm.file}" class="module${passedTestsCount===allTestsCount?" passed":""}">
+    return `<li id="${tm.file}" class="module${
+      passedTestsCount === allTestsCount ? " passed" : ""
+    }">
       <span class="moduleName">${tm.file}</span>
-      <span class="moduleSummary"> ( ${passedTestsCount} / ${allTestsCount} ${pluralize("test",allTestsCount)} passed )</span>
+      <span class="moduleSummary"> ( ${passedTestsCount} / ${allTestsCount} ${pluralize(
+      "test",
+      allTestsCount
+    )} passed )</span>
       <div class="logs">${tm.logs.join("<br/>")}</div>
       <ul>${tm.tests.map(renderTest).join("\n")}</ul>
       </li>`;
@@ -94,24 +99,26 @@ async function displayTests() {
   const tests = document.getElementById("tests");
   tests.innerHTML = `<ul class="wrapper"><li>
       <span class="all module">ALL TESTS</span>
-      <ul class="allTests">${ testModules.map(renderModule).join("\n") }</ul>
+      <ul class="allTests">${testModules.map(renderModule).join("\n")}</ul>
       </li></ul>`;
 
-  tests.querySelectorAll('.module').forEach(elem=>{
+  tests.querySelectorAll(".module").forEach(elem => {
     elem.onclick = switchPassed;
     manualSwitchPassed(elem);
   });
-  function switchPassed(){
+  function switchPassed() {
     manualSwitchPassed(this);
     console.log(this);
   }
-  function manualSwitchPassed(elem){
+  function manualSwitchPassed(elem) {
     elem.classList.toggle("hidePassed");
   }
 
   document.getElementById("summary").innerHTML = summaryMessages(
     calculateSummary(testModules)
-  ).map(m=>m.html).join('');
+  )
+    .map(m => m.html)
+    .join("");
 }
 
 async function execHooks(hooks, t) {
