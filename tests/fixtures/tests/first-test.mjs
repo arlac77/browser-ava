@@ -2,6 +2,7 @@ import test from "ava";
 
 import { foo } from "./foo.mjs";
 import { bar, internal } from "bar";
+import { extra } from "bar/extra";
 import { baz, bazbay } from "baz";
 
 function wait(ms = 1000) {
@@ -31,6 +32,7 @@ test("test.context", t => {
 test("test.resolv", t => {
   t.is(foo(), "foo");
   t.is(bar(), "bar");
+  t.is(extra(), "extra");
   t.is(baz(), "baz");
   t.is(bazbay(), "bazbay");
   t.is(internal(), "browser internal"); // differs between ava and browser-ava

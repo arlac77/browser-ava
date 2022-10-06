@@ -1,7 +1,10 @@
 {
   "name": "bar",
   "exports": {
-    ".": "./src/bar.mjs"
+    ".": "./src/bar.mjs",
+    "./extra": {
+      "import": "./src/extra.mjs"
+    }
   },
   "imports": {
     "#internal.mjs": {

@@ -145,29 +145,59 @@ const importsConditionOrder = ["browser", "default"];
  */
 const exportsConditionOrder = ["browser", "import", ".", "default"];
 
-function entryPoint(pkg, path) {
-  switch (typeof pkg.exports) {
-    case "string":
-      return join(path, pkg.exports);
-    case "object":
-      for (const condition of exportsConditionOrder) {
-        if (pkg.exports[condition]) {
-          return join(path, pkg.exports[condition]);
+/**
+ * find module inside a package
+ * @param {string} parts
+ * @param {Object} pkg package.json content
+ * @param {string} path
+ * @returns {string|undefined} module file name
+ */
+function entryPoint(parts, pkg, path) {
+  if (parts[0] === pkg.name) {
+    if (parts.length === 1) {
+      switch (typeof pkg.exports) {
+        case "string":
+          return join(path, pkg.exports);
+        case "object":
+          for (const condition of exportsConditionOrder) {
+            if (pkg.exports[condition]) {
+              return join(path, pkg.exports[condition]);
+            }
+          }
+      }
+
+      return join(path, pkg.main || "index.js");
+    } else {
+      // TODO find generlized form
+      if (parts.length === 2) {
+        const slot = "./" + parts[1];
+
+        switch (typeof pkg.exports[slot]) {
+          case "string":
+            return join(path, pkg.exports[slot]);
+
+          case "object":
+            for (const condition of exportsConditionOrder) {
+              if (pkg.exports[slot][condition]) {
+                return join(path, pkg.exports[slot][condition]);
+              }
+            }
         }
       }
+    }
   }
-
-  return join(path, pkg.main || "index.js");
 }
 
 async function resolveImport(name, file) {
+  const parts = name.split(/\//);
+
   if (name.match(/^[\/\.]/)) {
     return resolve(dirname(file), name);
   }
   let { pkg, path } = await loadPackage(file);
 
-  if (name === pkg.name) {
-    return entryPoint(pkg, path);
+  if (name.startsWith(pkg.name)) {
+    return entryPoint(parts, pkg, path);
   }
   if (name.match(/^#/)) {
     const importSlot = pkg.imports[name];
@@ -183,11 +213,11 @@ async function resolveImport(name, file) {
   while (path.length > 1) {
     let p;
     try {
-      p = join(path, "node_modules", name);
+      p = join(path, "node_modules", parts[0]);
       pkg = JSON.parse(
         await readFile(join(p, "package.json"), utf8EncodingOptions)
       );
-      return entryPoint(pkg, p);
+      return entryPoint(parts, pkg, p);
     } catch (e) {
       if (e.code !== "ENOTDIR" && e.code !== "ENOENT") {
         throw e;
