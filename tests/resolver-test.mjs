@@ -9,6 +9,7 @@ rt.title = (title = "resolve", name, pkg, result) =>
   `${title} ${name} => ${result}`;
 
 test(rt, "a", { name: "a", main: "index.mjs" }, "index.mjs");
+test(rt, "a", { name: "a" }, "index.js" );
 test(rt, "a", { name: "a", exports: { ".": "./src/a.mjs" } }, "src/a.mjs");
 test(rt, "b", { name: "b", exports: { browser: "./src/b.mjs" } }, "src/b.mjs");
 test(rt, "d", { name: "d", exports: { default: "./src/d.mjs" } }, "src/d.mjs");
