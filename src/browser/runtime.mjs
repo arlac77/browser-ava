@@ -221,7 +221,7 @@ function testContext(def, parentContext) {
               message: `expected ${slot}=${expectation[slot]} but got ${e[slot]}`,
               title
             });
-            return false;
+            return;
           }
         }
       }
@@ -234,7 +234,7 @@ function testContext(def, parentContext) {
               message: `${slot} does not match ${expectation[slot]}`,
               title
             });
-            return false;
+            return;
           }
         }
 
@@ -245,13 +245,13 @@ function testContext(def, parentContext) {
               message: `expected ${slot}=${expectation[slot]} but got ${e[slot]}`,
               title
             });
-            return false;
+            return;
           }
         }
       }
     }
 
-    return true;
+    def.assertions.push({ passed: true, title });
   }
 
   const assertions = {
@@ -275,9 +275,7 @@ function testContext(def, parentContext) {
           message: "Expected exception to be thrown"
         });
       } catch (e) {
-        if (throwsExpectationHandler(expectation, title)) {
-          def.assertions.push({ passed: true, title });
-        }
+        throwsExpectationHandler(e, expectation, title);
       }
     },
 
@@ -290,9 +288,7 @@ function testContext(def, parentContext) {
           message: "Expected exception to be thrown"
         });
       } catch (e) {
-        if (throwsExpectationHandler(expectation, title)) {
-          def.assertions.push({ passed: true, title });
-        }
+        throwsExpectationHandler(e, expectation, title);
       }
     },
 
