@@ -56,9 +56,6 @@ ws.onmessage = async message => {
 };
 
 async function displayTests() {
-  const run = document.getElementById("run");
-  run.onclick = runTestModules;
-
   function renderTest(t) {
     return `<li class="test ${
       t.passed === true
@@ -150,7 +147,9 @@ async function runTest(parent, tm, test) {
         test.passed = false;
         test.message = "Test finished without running any assertions";
       } else {
-        test.passed = !test.assertions.find(a => a.passed !== true && !a.skipped);
+        test.passed = !test.assertions.find(
+          a => a.passed !== true && !a.skipped
+        );
 
         if (t.planned !== undefined && t.planned !== test.assertions.length) {
           test.passed = false;
@@ -164,30 +163,38 @@ async function runTest(parent, tm, test) {
   }
 }
 
+const runButton = document.getElementById("run");
+
 /**
  * run serial tests before all others
  */
 async function runTestModule(tm) {
-  tm.logs = [];
+  runButton.classList.add("running");
 
-  const t = {
-    context: {},
-    log(...args) {
-      tm.logs.push(args);
+  try {
+    tm.logs = [];
+
+    const t = {
+      context: {},
+      log(...args) {
+        tm.logs.push(args);
+      }
+    };
+
+    await execHooks(tm.before, t);
+
+    for (const test of tm.tests.filter(test => test.serial)) {
+      await runTest(t, tm, test);
     }
-  };
 
-  await execHooks(tm.before, t);
+    await Promise.all(
+      tm.tests.filter(test => !test.serial).map(test => runTest(t, tm, test))
+    );
 
-  for (const test of tm.tests.filter(test => test.serial)) {
-    await runTest(t, tm, test);
+    await execHooks(tm.after, t);
+  } finally {
+    runButton.classList.remove("running");
   }
-
-  await Promise.all(
-    tm.tests.filter(test => !test.serial).map(test => runTest(t, tm, test))
-  );
-
-  await execHooks(tm.after, t);
 }
 
 async function runTestModules() {
@@ -197,6 +204,8 @@ async function runTestModules() {
 
   displayTests();
 }
+
+runButton.onclick = runTestModules;
 
 function testContext(def, parentContext) {
   def.assertions = [];
