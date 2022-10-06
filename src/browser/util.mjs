@@ -19,7 +19,9 @@ export function calculateSummary(testModules) {
             if (test.failing) {
               knownFailure++;
             } else {
-              failed++;
+              if(test.passed === false) {
+                failed++;
+              }
             }
           }
         }
