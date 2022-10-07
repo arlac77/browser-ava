@@ -58,31 +58,37 @@ export function entryPoint(parts, pkg) {
 }
 
 async function loadPackage(path) {
+  try {
+    return JSON.parse(
+      await readFile(join(path, "package.json"), utf8EncodingOptions)
+    );
+  } catch (e) {
+    if (e.code !== "ENOTDIR" && e.code !== "ENOENT") {
+      throw e;
+    }
+  }
+}
+
+async function findPackage(path) {
   while (path.length) {
-    try {
+    const pkg = await loadPackage(path);
+    if (pkg) {
       return {
         path,
-        pkg: JSON.parse(
-          await readFile(join(path, "package.json"), utf8EncodingOptions)
-        )
+        pkg
       };
-    } catch (e) {
-      if (e.code !== "ENOTDIR" && e.code !== "ENOENT") {
-        throw e;
-      }
     }
-
     path = dirname(path);
   }
 }
 
 export async function resolveImport(name, file) {
-  const parts = name.split(/\//);
-
   if (name.match(/^[\/\.]/)) {
     return resolve(dirname(file), name);
   }
-  let { pkg, path } = await loadPackage(file);
+  let { pkg, path } = await findPackage(file);
+
+  const parts = name.split(/\//);
 
   const e = entryPoint(parts, pkg);
 
@@ -101,18 +107,10 @@ export async function resolveImport(name, file) {
   }
 
   while (path.length > 1) {
-    let p;
-    try {
-      p = join(path, "node_modules", parts[0]);
-      pkg = JSON.parse(
-        await readFile(join(p, "package.json"), utf8EncodingOptions)
-      );
-
+    const p = join(path, "node_modules", parts[0]);
+    pkg = await loadPackage(p);
+    if (pkg) {
       return join(p, entryPoint(parts, pkg));
-    } catch (e) {
-      if (e.code !== "ENOTDIR" && e.code !== "ENOENT") {
-        throw e;
-      }
     }
     path = dirname(dirname(path));
   }
