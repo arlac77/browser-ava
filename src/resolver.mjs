@@ -22,37 +22,25 @@ const exportsConditionOrder = ["browser", "import", ".", "default"];
  * @returns {string|undefined} module file name
  */
 export function entryPoint(parts, pkg) {
-  if (parts[0] === pkg.name) {
-    if (parts.length === 1) {
-      switch (typeof pkg.exports) {
-        case "string":
-          return pkg.exports;
-        case "object":
-          for (const condition of exportsConditionOrder) {
-            if (pkg.exports[condition]) {
-              return pkg.exports[condition];
-            }
+  function matchingCondition(value) {
+    switch (typeof value) {
+      case "string":
+        return value;
+      case "object":
+        for (const condition of exportsConditionOrder) {
+          if (value[condition]) {
+            return value[condition];
           }
-      }
-
-      return pkg.main || "index.js";
-    } else {
-      // TODO find generlized form
-      if (parts.length === 2) {
-        const slot = "./" + parts[1];
-
-        switch (typeof pkg.exports[slot]) {
-          case "string":
-            return pkg.exports[slot];
-
-          case "object":
-            for (const condition of exportsConditionOrder) {
-              if (pkg.exports[slot][condition]) {
-                return pkg.exports[slot][condition];
-              }
-            }
         }
-      }
+    }
+  }
+
+  if (parts[0] === pkg.name) {
+    switch (parts.length) {
+      case 1:
+        return matchingCondition(pkg.exports) || pkg.main || "index.js";
+      case 2:
+        return matchingCondition(pkg.exports["./" + parts[1]]);
     }
   }
 }
