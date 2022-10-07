@@ -39,8 +39,8 @@ export function entryPoint(parts, pkg) {
     switch (parts.length) {
       case 1:
         return matchingCondition(pkg.exports) || pkg.main || "index.js";
-      case 2:
-        return matchingCondition(pkg.exports["./" + parts[1]]);
+      default:
+        return matchingCondition(pkg.exports["./" + parts.slice(1).join("/")]);
     }
   }
 }
