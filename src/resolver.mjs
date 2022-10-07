@@ -19,24 +19,23 @@ const exportsConditionOrder = ["browser", "import", ".", "default"];
  * find module inside a package
  * @param {string} parts
  * @param {Object} pkg package.json content
- * @param {string} path
  * @returns {string|undefined} module file name
  */
-export function entryPoint(parts, pkg, path) {
+export function entryPoint(parts, pkg) {
   if (parts[0] === pkg.name) {
     if (parts.length === 1) {
       switch (typeof pkg.exports) {
         case "string":
-          return join(path, pkg.exports);
+          return pkg.exports;
         case "object":
           for (const condition of exportsConditionOrder) {
             if (pkg.exports[condition]) {
-              return join(path, pkg.exports[condition]);
+              return pkg.exports[condition];
             }
           }
       }
 
-      return join(path, pkg.main || "index.js");
+      return pkg.main || "index.js";
     } else {
       // TODO find generlized form
       if (parts.length === 2) {
@@ -44,56 +43,17 @@ export function entryPoint(parts, pkg, path) {
 
         switch (typeof pkg.exports[slot]) {
           case "string":
-            return join(path, pkg.exports[slot]);
+            return pkg.exports[slot];
 
           case "object":
             for (const condition of exportsConditionOrder) {
               if (pkg.exports[slot][condition]) {
-                return join(path, pkg.exports[slot][condition]);
+                return pkg.exports[slot][condition];
               }
             }
         }
       }
     }
-  }
-}
-
-export async function resolveImport(name, file) {
-  const parts = name.split(/\//);
-
-  if (name.match(/^[\/\.]/)) {
-    return resolve(dirname(file), name);
-  }
-  let { pkg, path } = await loadPackage(file);
-
-  if (name.startsWith(pkg.name)) {
-    return entryPoint(parts, pkg, path);
-  }
-  if (name.match(/^#/)) {
-    const importSlot = pkg.imports[name];
-    if (importSlot) {
-      for (const condition of importsConditionOrder) {
-        if (importSlot[condition]) {
-          return join(path, importSlot[condition]);
-        }
-      }
-    }
-  }
-
-  while (path.length > 1) {
-    let p;
-    try {
-      p = join(path, "node_modules", parts[0]);
-      pkg = JSON.parse(
-        await readFile(join(p, "package.json"), utf8EncodingOptions)
-      );
-      return entryPoint(parts, pkg, p);
-    } catch (e) {
-      if (e.code !== "ENOTDIR" && e.code !== "ENOENT") {
-        throw e;
-      }
-    }
-    path = dirname(dirname(path));
   }
 }
 
@@ -113,5 +73,47 @@ async function loadPackage(path) {
     }
 
     path = dirname(path);
+  }
+}
+
+export async function resolveImport(name, file) {
+  const parts = name.split(/\//);
+
+  if (name.match(/^[\/\.]/)) {
+    return resolve(dirname(file), name);
+  }
+  let { pkg, path } = await loadPackage(file);
+
+  const e = entryPoint(parts, pkg);
+
+  if (e) {
+    return join(path, e);
+  }
+  if (name.match(/^#/)) {
+    const importSlot = pkg.imports[name];
+    if (importSlot) {
+      for (const condition of importsConditionOrder) {
+        if (importSlot[condition]) {
+          return join(path, importSlot[condition]);
+        }
+      }
+    }
+  }
+
+  while (path.length > 1) {
+    let p;
+    try {
+      p = join(path, "node_modules", parts[0]);
+      pkg = JSON.parse(
+        await readFile(join(p, "package.json"), utf8EncodingOptions)
+      );
+
+      return join(p, entryPoint(parts, pkg));
+    } catch (e) {
+      if (e.code !== "ENOTDIR" && e.code !== "ENOENT") {
+        throw e;
+      }
+    }
+    path = dirname(dirname(path));
   }
 }
