@@ -135,7 +135,19 @@ async function runTest(parent, tm, test) {
     try {
       await execHooks(tm.beforeEach, t);
 
+      if (t.ms) {
+        t.timer = setTimeout(() => {
+          t.passed = false;
+          t.log("Test timeout exceeded");
+        }, t.ms);
+      }
+
       await test.body(t, ...test.args);
+
+      if (t.timer) {
+        clearTimeout(t.timer);
+        delete t.timer;
+      }
 
       for (const td of t.teardowns.reverse()) {
         await td();
@@ -408,6 +420,8 @@ function testContext(def, parentContext) {
     teardown(fn) {
       this.teardowns.push(fn);
     },
-    timeout(ms) {}
+    timeout(ms) {
+      this.ms = ms;
+    }
   };
 }

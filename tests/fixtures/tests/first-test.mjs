@@ -75,8 +75,9 @@ test("test.kitchensink", t => {
   t.notRegex("foo", /bar/);
 });
 
-test("test.2", async t => {
-  await wait(1000);
+test("test.timeout", async t => {
+  t.timeout(1000);
+  await wait(100);
   t.true(1 === 2, "assert title 2");
 });
 
