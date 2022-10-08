@@ -21,7 +21,7 @@ const exportsConditionOrder = ["browser", "import", ".", "default"];
  * @param {Object} pkg package.json content
  * @returns {string|undefined} module file name
  */
-export function entryPoint(parts, pkg) {
+export function resolveExports(parts, pkg) {
   function matchingCondition(value) {
     switch (typeof value) {
       case "string":
@@ -41,6 +41,19 @@ export function entryPoint(parts, pkg) {
         return matchingCondition(pkg.exports) || pkg.main || "index.js";
       default:
         return matchingCondition(pkg.exports["./" + parts.slice(1).join("/")]);
+    }
+  }
+}
+
+export function resolveImports(name, pkg) {
+  if (name.match(/^#/)) {
+    const importSlot = pkg.imports[name];
+    if (importSlot) {
+      for (const condition of importsConditionOrder) {
+        if (importSlot[condition]) {
+          return importSlot[condition];
+        }
+      }
     }
   }
 }
@@ -78,27 +91,17 @@ export async function resolveImport(name, file) {
 
   const parts = name.split(/\//);
 
-  const e = entryPoint(parts, pkg);
+  const e = resolveExports(parts, pkg) || resolveImports(name, pkg);
 
   if (e) {
     return join(path, e);
-  }
-  if (name.match(/^#/)) {
-    const importSlot = pkg.imports[name];
-    if (importSlot) {
-      for (const condition of importsConditionOrder) {
-        if (importSlot[condition]) {
-          return join(path, importSlot[condition]);
-        }
-      }
-    }
   }
 
   while (path.length > 1) {
     const p = join(path, "node_modules", parts[0]);
     pkg = await loadPackage(p);
     if (pkg) {
-      return join(p, entryPoint(parts, pkg));
+      return join(p, resolveExports(parts, pkg));
     }
     path = dirname(dirname(path));
   }
