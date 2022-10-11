@@ -19,7 +19,7 @@ const exportsConditionOrder = ["browser", "import", ".", "default"];
  * find module inside a package
  * @param {string} parts
  * @param {Object} pkg package.json content
- * @returns {string|undefined} module file name
+ * @returns {string|undefined} module file name relative to package
  */
 export function resolveExports(parts, pkg) {
   function matchingCondition(value) {
@@ -83,6 +83,12 @@ async function findPackage(path) {
   }
 }
 
+/**
+ * Maps import url from node to browser view. 
+ * @param {string} name module to resolve
+ * @param {string} file where to start resolving (base) 
+ * @returns {Promise<string>} resolved import url
+ */
 export async function resolveImport(name, file) {
   if (name.match(/^[\/\.]/)) {
     return resolve(dirname(file), name);
