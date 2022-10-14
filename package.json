@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "commander": "^9.4.1",
-    "es-module-lexer": "^1.0.3",
+    "es-module-lexer": "^1.0.4",
     "koa": "^2.13.4",
     "koa-static": "^5.0.0",
     "playwright": "^1.27.1",
