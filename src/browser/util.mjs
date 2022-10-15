@@ -19,7 +19,7 @@ export function calculateSummary(testModules) {
             if (test.failing) {
               knownFailure++;
             } else {
-              if(test.passed === false) {
+              if (test.passed === false) {
                 failed++;
               }
             }
@@ -58,4 +58,15 @@ export function summaryMessages(summary) {
   message(summary.todo, "test", "{number} {word} todo", "todo");
 
   return messages;
+}
+
+/**
+ * @TODO HACK to be able to sent BigInt
+ */
+export function stringify(...args) {
+  const former = BigInt.prototype.toJSON;
+  BigInt.prototype.toJSON = (v) => v.toString();
+  const string = JSON.stringify(...args);
+  BigInt.prototype.toJSON = former;
+  return string;
 }

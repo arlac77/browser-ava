@@ -1,5 +1,5 @@
 import { testModules } from "./ava.mjs";
-import { calculateSummary, summaryMessages, pluralize } from "./util.mjs";
+import { calculateSummary, summaryMessages, pluralize, stringify } from "./util.mjs";
 import { isEqual } from "./eql.mjs";
 
 let ws = new WebSocket(`ws://${location.host}`);
@@ -13,7 +13,7 @@ for (const slot of ["log", "info", "error"]) {
 
   console[slot] = (...args) => {
     if (ws) {
-      ws.send(JSON.stringify({ action: slot, data: args }));
+      ws.send(stringify({ action: slot, data: args }));
     }
     former(...args);
   };
@@ -45,7 +45,7 @@ ws.onmessage = async message => {
 
         displayTests();
         if (errors === 0) {
-          ws.send(JSON.stringify({ action: "ready" }));
+          ws.send(stringify({ action: "ready" }));
         }
       }
       break;
@@ -212,7 +212,7 @@ async function runTestModule(tm) {
 async function runTestModules() {
   await Promise.all(testModules.map(tm => runTestModule(tm)));
 
-  ws.send(JSON.stringify({ action: "result", data: testModules }));
+  ws.send(stringify({ action: "result", data: testModules }));
 
   displayTests();
 }
