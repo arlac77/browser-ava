@@ -1,7 +1,7 @@
 import test from "ava";
 import { execa } from "execa";
 
-test("cli all passed", async t => {
+test.only("cli all passed", async t => {
   const p = await execa(
     "node",
     [
@@ -11,7 +11,7 @@ test("cli all passed", async t => {
       "--no-keep-open",
       "--headless",
       "--chromium",
-      "tests/fixtures/tests/second-test.mjs"
+      "tests/fixtures/tests/sec*-test.mjs" // test glob expansion
     ],
     { all: true }
   );

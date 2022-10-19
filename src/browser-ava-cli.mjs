@@ -10,6 +10,7 @@ import { WebSocketServer } from "ws";
 import { program, Option } from "commander";
 import { calculateSummary, summaryMessages } from "./browser/util.mjs";
 import { resolveImport } from "./resolver.mjs";
+import { globby } from "globby";
 
 const utf8EncodingOptions = { encoding: "utf8" };
 
@@ -68,13 +69,9 @@ program
 
     await init;
 
-    tests = tests
-      // do not try to load unexpanded files names
-      // do expansion here ?
-      .filter(file => !file.match(/[\*\?]/))
-      .map(file => {
-        return { url: resolve(process.cwd(), file), file };
-      });
+    tests = (await globby(tests)).map(file => {
+      return { url: resolve(process.cwd(), file), file };
+    });
 
     const { server, wss } = await createServer(tests, options);
 
