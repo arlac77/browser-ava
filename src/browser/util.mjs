@@ -32,9 +32,16 @@ export function calculateSummary(testModules) {
   return { passed, failed, knownFailure, skip, todo };
 }
 
+/**
+ * Pluralize subjects
+ * @param {string} word subject to be pluralized
+ * @param {number} number if > 1 pluralize otherwize keep subject alone
+ * @returns {string} pluralized subject if number > 1
+ */
 export function pluralize(word, number) {
   return number > 1 ? word + "s" : word;
 }
+
 export function summaryMessages(summary) {
   const messages = [];
 
