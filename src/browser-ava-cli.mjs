@@ -11,6 +11,7 @@ import { program, Option } from "commander";
 import { calculateSummary, summaryMessages } from "./browser/util.mjs";
 import { resolveImport } from "./resolver.mjs";
 import { globby } from "globby";
+import chalk from "chalk";
 
 const utf8EncodingOptions = { encoding: "utf8" };
 
@@ -107,8 +108,15 @@ program
           case "result":
             const summary = calculateSummary(data.data);
 
+            const classToColor = {
+              failed: "red",
+              passed: "green",
+              todo: "blue",
+              skip: "yellow"
+            };
+
             for (const m of summaryMessages(summary)) {
-              console.log(m.text);
+              console.log("  " + chalk[classToColor[m.colorClass] || "black"](m.text));
             }
 
             await shutdown(summary.failed);
