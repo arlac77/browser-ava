@@ -68,9 +68,13 @@ program
 
     await init;
 
-    tests = tests.map(file => {
-      return { url: resolve(process.cwd(), file), file };
-    });
+    tests = tests
+      // do not try to load unexpanded files names
+      // do expansion here ?
+      .filter(file => !file.match(/[\*\?]/))
+      .map(file => {
+        return { url: resolve(process.cwd(), file), file };
+      });
 
     const { server, wss } = await createServer(tests, options);
 
@@ -133,7 +137,6 @@ program
   });
 
 program.parse(process.argv);
-
 
 async function loadAndRewriteImports(file) {
   let body = await readFile(file, utf8EncodingOptions);
