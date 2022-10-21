@@ -88,18 +88,32 @@ test("test.teardown", async t => {
   t.true(true);
 });
 
-test("test.throws", t => {
-  t.throws(() => {
-    throw new Error("must throw");
+test("test.throws.message", t => {
+  t.throws(() => JSON.parse("{ xxx"), {
+    message: "Unexpected token x in JSON at position 2"
+  });
+});
+
+test("test.throws.instanceOf", t => {
+  t.throws(() => JSON.parse("{ xxx"), {
+    instanceOf: Error
   });
 
   t.throws(
     () => {
-      throw new Error("must throw");
+      throw new TypeError("🦄");
     },
-    { message: "must throw" }
+    { instanceOf: TypeError, message: "🦄" }
   );
+});
 
+test("test.throws", t => {
+  t.throws(() => {
+    throw new Error("must throw");
+  });
+});
+
+test("test.throws.message", t => {
   t.throws(
     () => {
       throw new Error("must throw");
@@ -111,13 +125,6 @@ test("test.throws", t => {
       throw new Error("must throw");
     },
     { message: m => m.length > 0 }
-  );
-
-  t.throws(
-    () => {
-      throw new TypeError("🦄");
-    },
-    { instanceOf: TypeError, message: "🦄" }
   );
 });
 
