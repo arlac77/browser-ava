@@ -27,6 +27,7 @@
     "cover": "c8 -x 'tests/**/*' --temp-directory build/tmp ava --timeout 2m tests/*-ava.mjs tests/*-ava-node.mjs && c8 report -r lcov -o build/coverage --temp-directory build/tmp"
   },
   "dependencies": {
+    "chalk": "^5.1.2",
     "commander": "^9.4.1",
     "es-module-lexer": "^1.0.5",
     "globby": "^13.1.2",
