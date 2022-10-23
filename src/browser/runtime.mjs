@@ -172,6 +172,9 @@ async function runTest(parent, tm, test) {
       test.passed = false;
       test.message = e;
     }
+    finally {
+      ws.send(stringify({ action: "update", data: test }));
+    }
   }
 }
 

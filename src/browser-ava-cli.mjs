@@ -58,7 +58,6 @@ program
   .argument("<tests...>")
   .action(async (tests, options) => {
     if (options.browser) {
-      
       const parts = options.browser.split(/:/);
       if (parts.length > 1) {
         if (parts[1] === "headless") {
@@ -113,6 +112,15 @@ program
           case "ready":
             ws.send(JSON.stringify({ action: "run" }));
             break;
+
+          case "update":
+            if (data.data.passed === true) {
+              console.log(chalk.green("✔ "), data.data.title);
+            } else {
+              console.log(chalk.red("✘ [fail]: "), data.data.title);
+            }
+            break;
+
           case "result":
             const summary = calculateSummary(data.data);
 
