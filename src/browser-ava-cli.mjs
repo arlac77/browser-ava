@@ -58,6 +58,14 @@ program
   .argument("<tests...>")
   .action(async (tests, options) => {
     if (options.browser) {
+      
+      const parts = options.browser.split(/:/);
+      if (parts.length > 1) {
+        if (parts[1] === "headless") {
+          options.headless = true;
+        }
+        options.browser = parts[0];
+      }
       browsers.push(knownBrowsers[options.browser]);
     }
 
@@ -116,7 +124,9 @@ program
             };
 
             for (const m of summaryMessages(summary)) {
-              console.log("  " + chalk[classToColor[m.colorClass] || "black"](m.text));
+              console.log(
+                "  " + chalk[classToColor[m.colorClass] || "black"](m.text)
+              );
             }
 
             await shutdown(summary.failed);
