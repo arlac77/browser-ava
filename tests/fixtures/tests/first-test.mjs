@@ -88,12 +88,6 @@ test("test.teardown", async t => {
   t.true(true);
 });
 
-test("test.throws.message", t => {
-  t.throws(() => JSON.parse("{ xxx"), {
-    message: "Unexpected token x in JSON at position 2"
-  });
-});
-
 test("test.throws.instanceOf", t => {
   t.throws(() => JSON.parse("{ xxx"), {
     instanceOf: Error
@@ -114,6 +108,12 @@ test("test.throws", t => {
 });
 
 test("test.throws.message", t => {
+  t.throws(() => JSON.parse("{ xxx"), {
+    message: "Unexpected token x in JSON at position 2"
+  });
+});
+
+test("test.throws.message.2", t => {
   t.throws(
     () => {
       throw new Error("must throw");
