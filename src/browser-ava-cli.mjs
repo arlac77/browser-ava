@@ -114,10 +114,17 @@ program
             break;
 
           case "update":
-            if (data.data.passed === true) {
-              console.log(chalk.green("✔ "), data.data.title);
+            if (data.data.skip) {
+              console.log(" ", chalk.yellow("- [skip] " + data.data.title));
             } else {
-              console.log(chalk.red("✘ [fail]: "), data.data.title);
+              if (data.data.todo) {
+              } else {
+                if (data.data.passed === true) {
+                  console.log(" ", chalk.green("✔"), data.data.title);
+                } else {
+                  console.log(" ", chalk.red("✘ [fail]: "), data.data.title);
+                }
+              }
             }
             break;
 
