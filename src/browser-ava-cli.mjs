@@ -6,6 +6,7 @@ import { init, parse } from "es-module-lexer";
 import { chromium, firefox, webkit } from "playwright";
 import Koa from "koa";
 import Static from "koa-static";
+import Cors from "@koa/cors";
 import { WebSocketServer } from "ws";
 import { program, Option } from "commander";
 import { calculateSummary, summaryMessages } from "./browser/util.mjs";
@@ -200,6 +201,8 @@ async function loadAndRewriteImports(file) {
 
 async function createServer(tests, options) {
   const app = new Koa();
+
+  app.use(Cors({ origin: "*" }));
 
   app.use(Static(new URL("./browser", import.meta.url).pathname));
 
