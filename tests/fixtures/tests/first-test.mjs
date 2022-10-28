@@ -52,6 +52,7 @@ test("test.kitchensink", t => {
         undefined: undefined,
         data: new Date(1),
         bigInt: 9007199254740991n,
+      //  symbol: Symbol("sym"),
         map: new Map([["k", "v"]]),
         set: new Set(["k"])
       }
@@ -65,6 +66,7 @@ test("test.kitchensink", t => {
         undefined: undefined,
         data: new Date(1),
         bigInt: 9007199254740991n,
+       // symbol: "sym",
         map: new Map([["k", "v"]]),
         set: new Set(["k"])
       }
