@@ -130,6 +130,7 @@ program
             break;
 
           case "result":
+            console.log("  ─\n");
             const summary = calculateSummary(data.data);
 
             const classToColor = {
