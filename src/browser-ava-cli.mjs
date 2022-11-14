@@ -95,18 +95,18 @@ program
     let errors = 0;
 
     wss.on("connection", ws => {
-      ws.on("message", async data => {
-        data = JSON.parse(data);
-        switch (data.action) {
+      ws.on("message", async content => {
+        const { action, data } = JSON.parse(content);
+        switch (action) {
           case "info":
-            console.info(...data.data);
+            console.info(...data);
             break;
           case "log":
-            console.log(...data.data);
+            console.log(...data);
             break;
           case "error":
             errors++;
-            console.error(...data.data);
+            console.error(...data);
             await shutdown(undefined, true);
             break;
 
@@ -115,15 +115,15 @@ program
             break;
 
           case "update":
-            if (data.data.skip) {
-              console.log(" ", chalk.yellow("- [skip] " + data.data.title));
+            if (data.skip) {
+              console.log(" ", chalk.yellow("- [skip] " + data.title));
             } else {
-              if (data.data.todo) {
+              if (data.todo) {
               } else {
-                if (data.data.passed === true) {
-                  console.log(" ", chalk.green("✔"), data.data.title);
+                if (data.passed === true) {
+                  console.log(data.name, " ", chalk.green("✔"), data.title);
                 } else {
-                  console.log(" ", chalk.red("✘ [fail]: "), data.data.title);
+                  console.log(" ", chalk.red("✘ [fail]: "), data.title);
                 }
               }
             }
@@ -131,7 +131,7 @@ program
 
           case "result":
             console.log("  ─\n");
-            const summary = calculateSummary(data.data);
+            const summary = calculateSummary(data);
 
             const classToColor = {
               failed: "red",
