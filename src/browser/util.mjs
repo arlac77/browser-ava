@@ -77,3 +77,7 @@ export function stringify(...args) {
   BigInt.prototype.toJSON = former;
   return string;
 }
+
+export function moduleName(url) {
+  return url.replace(/\.m?js$/,'')
+}

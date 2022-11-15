@@ -1,5 +1,11 @@
 import { testModules } from "./ava.mjs";
-import { calculateSummary, summaryMessages, pluralize, stringify } from "./util.mjs";
+import {
+  calculateSummary,
+  summaryMessages,
+  pluralize,
+  stringify,
+  moduleName
+} from "./util.mjs";
 import { isEqual } from "./eql.mjs";
 
 let ws = new WebSocket(`ws://${location.host}`);
@@ -80,10 +86,10 @@ async function displayTests() {
   function renderModule(tm) {
     const passedTestsCount = tm.tests.filter(t => t.passed).length;
     const allTestsCount = tm.tests.length;
-    return `<li id="${tm.file}" class="module${
+    return `<li id="${moduleName(tm.file)}" class="module${
       passedTestsCount === allTestsCount ? " passed" : ""
     }">
-      <span class="moduleName">${tm.file}</span>
+      <span class="moduleName">${moduleName(tm.file)}</span>
       <span class="moduleSummary"> ( ${passedTestsCount} / ${allTestsCount} ${pluralize(
       "test",
       allTestsCount
@@ -171,8 +177,7 @@ async function runTest(parent, tm, test) {
     } catch (e) {
       test.passed = false;
       test.message = e;
-    }
-    finally {
+    } finally {
       ws.send(stringify({ action: "update", data: test }));
     }
   }
