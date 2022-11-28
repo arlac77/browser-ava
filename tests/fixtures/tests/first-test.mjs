@@ -42,6 +42,8 @@ test("test.kitchensink", t => {
   t.log("1st. assertion is coming soon");
   t.is(1, 1);
   t.not(1, 2);
+
+  const sym = Symbol("sym");
   t.deepEqual(
     [
       1,
@@ -52,7 +54,7 @@ test("test.kitchensink", t => {
         undefined: undefined,
         data: new Date(1),
         bigInt: 9007199254740991n,
-      //  symbol: Symbol("sym"),
+        symbol: sym,
         map: new Map([["k", "v"]]),
         set: new Set(["k"])
       }
@@ -66,7 +68,7 @@ test("test.kitchensink", t => {
         undefined: undefined,
         data: new Date(1),
         bigInt: 9007199254740991n,
-       // symbol: "sym",
+        symbol: sym,
         map: new Map([["k", "v"]]),
         set: new Set(["k"])
       }
