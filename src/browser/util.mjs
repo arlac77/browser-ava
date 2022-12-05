@@ -67,17 +67,6 @@ export function summaryMessages(summary) {
   return messages;
 }
 
-/**
- * @TODO HACK to be able to sent BigInt
- */
-export function stringify(...args) {
-  const former = BigInt.prototype.toJSON;
-  BigInt.prototype.toJSON = (v) => v.toString();
-  const string = JSON.stringify(...args);
-  BigInt.prototype.toJSON = former;
-  return string;
-}
-
 export function moduleName(url) {
   return url.replace(/\.m?js$/,'')
 }

@@ -3,7 +3,6 @@ import {
   calculateSummary,
   summaryMessages,
   pluralize,
-  stringify,
   moduleName
 } from "./util.mjs";
 import { isEqual } from "./eql.mjs";
@@ -19,7 +18,7 @@ for (const slot of ["log", "info", "error"]) {
 
   console[slot] = (...args) => {
     if (ws) {
-      ws.send(stringify({ action: slot, data: args }));
+      ws.send(JSON.stringify({ action: slot, data: args }));
     }
     former(...args);
   };
@@ -51,7 +50,7 @@ ws.onmessage = async message => {
 
         displayTests();
         if (errors === 0) {
-          ws.send(stringify({ action: "ready" }));
+          ws.send(JSON.stringify({ action: "ready" }));
         }
       }
       break;
@@ -178,7 +177,7 @@ async function runTest(parent, tm, test) {
       test.passed = false;
       test.message = e;
     } finally {
-      ws.send(stringify({ action: "update", data: test }));
+      ws.send(JSON.stringify({ action: "update", data: test }));
     }
   }
 }
@@ -220,7 +219,7 @@ async function runTestModule(tm) {
 async function runTestModules() {
   await Promise.all(testModules.map(tm => runTestModule(tm)));
 
-  ws.send(stringify({ action: "result", data: testModules }));
+  ws.send(JSON.stringify({ action: "result", data: testModules }));
 
   displayTests();
 }
