@@ -18,6 +18,10 @@ for (const slot of ["log", "info", "error"]) {
 
   console[slot] = (...args) => {
     if (ws) {
+      // TODO how to serialize Error instances ?
+      if(args[0] instanceof Error) {
+        args[0] = "Error: " + args[0].message;
+      }
       ws.send(JSON.stringify({ action: slot, data: args }));
     }
     former(...args);
