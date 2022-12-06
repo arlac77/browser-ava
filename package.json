@@ -32,7 +32,7 @@
     "commander": "^9.4.1",
     "es-module-lexer": "^1.0.5",
     "globby": "^13.1.2",
-    "koa": "^2.13.4",
+    "koa": "^2.14.0",
     "koa-static": "^5.0.0",
     "playwright": "^1.27.1",
     "ws": "^8.11.0"
