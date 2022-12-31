@@ -60,3 +60,24 @@ test("cli invalid test", async t => {
     t.regex(p.all, /TypeError/);
   }
 });
+
+test.failing("cli with dynamic import test", async t => {
+  try {
+    const p = await execa(
+      "node",
+      [
+        new URL("../src/browser-ava-cli.mjs", import.meta.url).pathname,
+        "--port",
+        8093,
+        "--no-keep-open",
+        "--headless",
+        "--chromium",
+        "tests/fixtures/tests/dynamic-import-test.mjs"
+      ],
+      { all: true }
+    );
+  } catch (p) {
+    t.is(p.exitCode, 0);
+    t.regex(p.all, /1 test passed/);
+  }
+});

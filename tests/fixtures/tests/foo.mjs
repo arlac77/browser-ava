@@ -7,3 +7,5 @@ export function foo() {
 export function foobar() {
   return foo() + bar();
 }
+
+export default foo;
