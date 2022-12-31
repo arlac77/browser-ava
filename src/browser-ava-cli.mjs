@@ -121,7 +121,7 @@ program
               if (data.todo) {
               } else {
                 if (data.passed === true) {
-                  console.log( " ", chalk.green("✔"), data.title);
+                  console.log(" ", chalk.green("✔"), data.title);
                 } else {
                   console.log(" ", chalk.red("✘ [fail]: "), data.title);
                 }
