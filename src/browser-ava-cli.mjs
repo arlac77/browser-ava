@@ -190,13 +190,17 @@ async function loadAndRewriteImports(file) {
     }
 
     if (m) {
-      body = body.substring(0, i.s + d) + m + body.substring(i.e + d);
+      if (i.d > -1) {
+        body = body.substring(0, i.s + 1 + d) + m + body.substring(i.e - 1 + d);
+      } else {
+        body = body.substring(0, i.s + d) + m + body.substring(i.e + d);
+      }
+
       d += m.length - i.n.length;
     } else {
       console.warn(`Unable to resolve "${i.n}" may lead to import errors`);
     }
   }
-
   return body;
 }
 
