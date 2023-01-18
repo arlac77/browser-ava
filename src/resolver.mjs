@@ -13,7 +13,7 @@ const importsConditionOrder = ["browser", "default"];
  * Order in which exports are searched
  * @see {https://nodejs.org/dist/latest/docs/api/packages.html#exports}
  */
-const exportsConditionOrder = ["browser", "import", ".", "default"];
+const exportsConditionOrder = ["browser", "module", "import", ".", "default"];
 
 /**
  * find module inside a package
