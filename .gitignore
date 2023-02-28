@@ -1,5 +1,6 @@
 build
 .DS_Store
+bun.lockb
 /node_modules/**
 *.log
 *.dump
