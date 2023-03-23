@@ -299,6 +299,7 @@ function testContext(def, parentContext) {
         });
       } catch (e) {
         throwsExpectationHandler(e, expectation, title);
+        return e;
       }
     },
 
@@ -312,6 +313,7 @@ function testContext(def, parentContext) {
         });
       } catch (e) {
         throwsExpectationHandler(e, expectation, title);
+        return e;
       }
     },
 
