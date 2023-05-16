@@ -16,8 +16,8 @@ const importsConditionOrder = ["browser", "default"];
 const exportsConditionOrder = ["browser", "module", "import", ".", "default"];
 
 /**
- * find module inside a package
- * @param {string} parts
+ * Find module inside a package.
+ * @param {string[]} parts
  * @param {Object} pkg package.json content
  * @returns {string|undefined} module file name relative to package
  */
@@ -95,7 +95,11 @@ export async function resolveImport(name, base) {
   }
   let { pkg, path } = await findPackage(base);
 
-  const parts = name.split(/\//);
+  let parts = name.split(/\//);
+
+  if (parts[0][0] === "@") {
+    parts = [parts[0] + "/" + parts[1], ...parts.slice(2)];
+  }
 
   const e = resolveExports(parts, pkg) || resolveImports(name, pkg);
 
