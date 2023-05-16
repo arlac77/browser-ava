@@ -84,16 +84,16 @@ async function findPackage(path) {
 }
 
 /**
- * Maps import url from node to browser view. 
+ * Maps import url from node to browser view.
  * @param {string} name module to resolve
- * @param {string} file where to start resolving (base) 
+ * @param {string} base where to start resolving
  * @returns {Promise<string>} resolved import url
  */
-export async function resolveImport(name, file) {
+export async function resolveImport(name, base) {
   if (name.match(/^[\/\.]/)) {
-    return resolve(dirname(file), name);
+    return resolve(dirname(base), name);
   }
-  let { pkg, path } = await findPackage(file);
+  let { pkg, path } = await findPackage(base);
 
   const parts = name.split(/\//);
 
