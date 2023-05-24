@@ -19,6 +19,7 @@ If your code does not depend on any node api (process, fs, ...) then this runner
 browser-ava --webkit --chromium --firefox tests/*.mjs
 ```
 
+![Scrrenshot](docs/screenshot.png)
 
 ## limitations
 
