@@ -10,11 +10,9 @@ import Cors from "@koa/cors";
 import { WebSocketServer } from "ws";
 import { program, Option } from "commander";
 import { calculateSummary, summaryMessages } from "./browser/util.mjs";
-import { resolveImport } from "./resolver.mjs";
+import { resolveImport, utf8EncodingOptions } from "./resolver.mjs";
 import { globby } from "globby";
 import chalk from "chalk";
-
-const utf8EncodingOptions = { encoding: "utf8" };
 
 const { version, description } = JSON.parse(
   readFileSync(
