@@ -6,13 +6,13 @@
   },
   "description": "Run ava tests in the browser",
   "keywords": [
-    "ava",
-    "runner",
-    "test",
-    "testing",
     "assert",
     "assertion",
-    "browser"
+    "ava",
+    "browser",
+    "runner",
+    "test",
+    "testing"
   ],
   "contributors": [
     {
