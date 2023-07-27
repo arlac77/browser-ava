@@ -9,7 +9,10 @@
     "ava",
     "runner",
     "test",
-    "testing"
+    "testing",
+    "assert",
+    "assertion",
+    "browser"
   ],
   "contributors": [
     {
