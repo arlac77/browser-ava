@@ -10,6 +10,9 @@ import { isEqual } from "./eql.mjs";
 let ws = new WebSocket(`ws://${location.host}`);
 ws.onerror = console.error;
 
+BigInt.prototype.toJSON = function() { return this.toString() };
+Error.prototype.toJSON = function() { return this.toString() };
+
 /*
  forward console info,log,error to the server
  */
@@ -18,10 +21,6 @@ for (const slot of ["log", "info", "error"]) {
 
   console[slot] = (...args) => {
     if (ws) {
-      // TODO how to serialize Error instances ?
-      if(args[0] instanceof Error) {
-        args[0] = "Error: " + args[0].message;
-      }
       ws.send(JSON.stringify({ action: slot, data: args }));
     }
     former(...args);
