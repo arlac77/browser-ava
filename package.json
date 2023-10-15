@@ -48,7 +48,8 @@
     "semantic-release": "^22.0.5"
   },
   "engines": {
-    "node": ">=18.18.2"
+    "node": ">=18.18.2",
+    "bun": ">=1.0"
   },
   "repository": {
     "type": "git",
