@@ -64,12 +64,19 @@ program
         }
         options.browser = parts[0];
       }
-      browsers.push(knownBrowsers[options.browser]);
+
+      const browser = knownBrowsers[options.browser];
+      if(browser) {
+        browsers.push(browser);
+      }
+      else {
+        console.error(`Unknwon browser ${options.browser}`);
+      }
     }
 
     if (browsers.length === 0) {
       console.error(
-        "No browsers selected use --webkit, --chromium and/or --firefox"
+        `No browsers selected use ${Object.keys(knownBrowsers).map(b => ` --${b}`)}`
       );
       process.exit(2);
     }
