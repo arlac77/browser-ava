@@ -48,7 +48,7 @@
     "semantic-release": "^22.0.6"
   },
   "engines": {
-    "node": ">=18.18.2",
+    "node": ">=20.9.0",
     "bun": ">=1.0"
   },
   "repository": {
