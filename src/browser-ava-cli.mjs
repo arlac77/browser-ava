@@ -22,6 +22,7 @@ const { version, description } = JSON.parse(
 );
 
 const knownBrowsers = {
+  chrome: chromium,
   chromium: chromium,
   firefox: firefox,
   webkit: webkit,
