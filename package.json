@@ -36,7 +36,7 @@
     "commander": "^11.1.0",
     "es-module-lexer": "^1.4.1",
     "globby": "^14.0.0",
-    "koa": "^2.14.2",
+    "koa": "^2.15.0",
     "koa-static": "^5.0.0",
     "playwright": "^1.40.1",
     "ws": "^8.16.0"
