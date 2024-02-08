@@ -42,6 +42,20 @@ test(rest, "e", { name: "e", exports: "./src/e.mjs" }, "./src/e.mjs");
 test(rest, "e/s", { name: "e", exports: "./src/e.mjs" }, undefined);
 test(rest, "e/s", { name: "e", exports: { "./s": "./s.mjs" } }, "./s.mjs");
 test(rest, "e/s/t", { name: "e", exports: { "./s/t": "./t.mjs" } }, "./t.mjs");
+test(
+  rest,
+  "f",
+  {
+    name: "f",
+    exports: {
+      ".": {
+        types: "./d.ts",
+        default: "./src/f.mjs"
+      }
+    }
+  },
+  "./src/f.mjs"
+);
 
 function rist(t, module, pkg, result) {
   t.is(resolveImports(module, pkg), result);

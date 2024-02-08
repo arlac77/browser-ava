@@ -31,6 +31,9 @@ export function resolveExports(parts, pkg) {
       case "string":
         return value;
       case "object":
+        if(value['.']) {
+          return matchingCondition(value['.']);
+        }
         for (const condition of exportsConditionOrder) {
           if (value[condition]) {
             return value[condition];
