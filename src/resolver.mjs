@@ -22,7 +22,7 @@ const exportsConditionOrder = ["browser", "module", "import", ".", "default"];
 /**
  * Find module inside a package.
  * @param {string[]} parts
- * @param {Object} pkg package.json content
+ * @param {Object} pkg decoded package.json content
  * @returns {string|undefined} module file name relative to package
  */
 export function resolveExports(parts, pkg) {
