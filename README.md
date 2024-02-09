@@ -11,7 +11,6 @@
 # browser-ava
 Run ava tests in the browser
 
-
 ## What it does
 
 If your code does not depend on any node api (process, fs, ...) then this runner allows to run your ava test inside the browser.
@@ -28,6 +27,7 @@ browser-ava --webkit --chromium --firefox tests/*.mjs
 
 - only supports ESM
 
+# API
 
 ## install
 
