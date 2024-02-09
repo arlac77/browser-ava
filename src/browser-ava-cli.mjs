@@ -47,7 +47,7 @@ program
       .env("PORT")
   )
   .addOption(
-    new Option("-b, --browser <name>", "browser to use").env("BROWSER")
+    new Option("-b, --browser <name>[,secondName]", "browser to use").env("BROWSER")
   )
   .option("--headless", "hide browser window", false)
   .option(
@@ -58,26 +58,29 @@ program
   .argument("<tests...>")
   .action(async (tests, options) => {
     if (options.browser) {
-      const parts = options.browser.split(/:/);
-      if (parts.length > 1) {
-        if (parts[1] === "headless") {
-          options.headless = true;
+      for (let b of options.browser.split(/,/)) {
+        const parts = b.split(/:/);
+        if (parts.length > 1) {
+          if (parts[1] === "headless") {
+            options.headless = true;
+          }
+          b = parts[0];
         }
-        options.browser = parts[0];
-      }
 
-      const browser = knownBrowsers[options.browser];
-      if(browser) {
-        browsers.push(browser);
-      }
-      else {
-        console.error(`Unknwon browser ${options.browser}`);
+        const browser = knownBrowsers[b];
+        if (browser) {
+          browsers.push(browser);
+        } else {
+          console.error(`Unknwon browser ${b}`);
+        }
       }
     }
 
     if (browsers.length === 0) {
       console.error(
-        `No browsers selected use ${Object.keys(knownBrowsers).map(b => ` --${b}`)}`
+        `No browsers selected use ${Object.keys(knownBrowsers).map(
+          b => ` --${b}`
+        )}`
       );
       process.exit(2);
     }
