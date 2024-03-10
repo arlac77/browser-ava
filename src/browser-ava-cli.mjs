@@ -47,7 +47,7 @@ program
       .env("PORT")
   )
   .addOption(
-    new Option("-b, --browser <name>[,secondName]", "browser to use").env("BROWSER")
+    new Option("-b, --browser <name>[,secondBrowserName]", "browsers to use").env("BROWSER")
   )
   .option("--headless", "hide browser window", false)
   .option(
