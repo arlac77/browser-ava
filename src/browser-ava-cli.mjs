@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { init, parse } from "es-module-lexer";
@@ -209,7 +208,7 @@ async function loadAndRewriteImports(file) {
 
       d += m.length - i.n.length;
     } else {
-      console.warn(`Unable to resolve "${i.n}" may lead to import errors`);
+      console.warn(`${file}: Unable to resolve "${i.n}" may lead to import errors`);
     }
   }
   return body;
