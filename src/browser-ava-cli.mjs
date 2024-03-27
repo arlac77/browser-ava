@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --no-warnings --title browser-ava
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { init, parse } from "es-module-lexer";
