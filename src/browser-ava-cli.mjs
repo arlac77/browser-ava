@@ -13,13 +13,7 @@ import { calculateSummary, summaryMessages } from "./browser/util.mjs";
 import { resolveImport, utf8EncodingOptions } from "./resolver.mjs";
 import { globby } from "globby";
 import chalk from "chalk";
-
-const { version, description } = JSON.parse(
-  readFileSync(
-    new URL("../package.json", import.meta.url).pathname,
-    utf8EncodingOptions
-  )
-);
+import pkg from "../package.json" assert { type: "json" };
 
 const knownBrowsers = {
   chrome: chromium,
@@ -39,20 +33,28 @@ Object.entries(knownBrowsers).forEach(([name, browser]) => {
 });
 
 program
-  .description(description)
-  .version(version)
+  .description(pkg.description)
+  .version(pkg.version)
   .addOption(
     new Option("-p, --port <number>", "server port to use")
       .default(8080)
       .env("PORT")
   )
   .addOption(
-    new Option("-b, --browser <name>[,secondBrowserName]", "browsers to use").env("BROWSER")
+    new Option(
+      "-b, --browser <name>[,secondBrowserName]",
+      "browsers to use"
+    ).env("BROWSER")
   )
   .option("--headless", "hide browser window", false)
   .option(
+    "--keep-open",
+    "keep browser-ava and the browser open after execution",
+    true
+  )
+  .option(
     "--no-keep-open",
-    "keep browser-ava and the page open after execution",
+    "close browser-ava and the browsers after execution",
     true
   )
   .argument("<tests...>")
