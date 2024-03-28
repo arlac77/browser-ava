@@ -6,22 +6,22 @@ import {
   resolveImports
 } from "../src/resolver.mjs";
 
-async function ret(t, name, result) {
-  const pd = new URL("./fixtures", import.meta.url).pathname;
+async function ret(t, base, name, result) {
+  const pd = new URL(base, import.meta.url).pathname;
   t.is(await resolveImport(name, pd), join(pd, result));
 }
 
-ret.title = (title = "resolve import", name, result) =>
-  `${title} ${name} => ${result}`;
+ret.title = (title = "resolveImport", base, name, result) =>
+  `${title} ${base} ${name} => ${result}`;
 
-test(ret, "bar", "/src/bar.mjs");
-test(ret, "@a/b", "/node_modules/@a/b/ab.mjs");
+test(ret, "./fixtures", "bar", "/src/bar.mjs");
+test(ret, "./fixtures", "@a/b", "/node_modules/@a/b/ab.mjs");
 
 function rest(t, module, pkg, result) {
   t.is(resolveExports(module.split(/\//), pkg), result);
 }
 
-rest.title = (title = "resolve exports", name, pkg, result) =>
+rest.title = (title = "resolveExports", name, pkg, result) =>
   `${title} ${name} => ${result}`;
 
 test(rest, "a", { name: "a", main: "index.mjs" }, "index.mjs");
