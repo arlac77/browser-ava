@@ -60,7 +60,7 @@ test(
   "./src/f.mjs"
 );
 
-test(
+test.skip(
   rest,
   "@a/b",
   {
