@@ -15,7 +15,7 @@ ret.title = (title = "resolve import", name, result) =>
   `${title} ${name} => ${result}`;
 
 test(ret, "bar", "/src/bar.mjs");
-//test.only(ret, "@a/b", "/index.js");
+test(ret, "@a/b", "/node_modules/@a/b/ab.mjs");
 
 function rest(t, module, pkg, result) {
   t.is(resolveExports(module.split(/\//), pkg), result);
