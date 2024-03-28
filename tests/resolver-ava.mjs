@@ -18,7 +18,8 @@ test(ret, "./fixtures", "bar", "/src/bar.mjs");
 test(ret, "./fixtures", "@a/b", "/node_modules/@a/b/ab.mjs");
 test(ret, "./fixtures/node_modules/@a/b", "@a/b", "/ab.mjs");
 test(ret, "./fixtures", "@a/c", "/node_modules/@a/c/ac.mjs");
-test.skip(ret, "./fixtures/node_modules/@a/b", "@a/c", "../c/ac.mjs");
+test(ret, "./fixtures/node_modules/@a", "@a/c", "/c/ac.mjs");
+test(ret, "./fixtures/node_modules/@a/b", "@a/c", "../c/ac.mjs");
 
 function rest(t, module, pkg, result) {
   t.is(resolveExports(module.split(/\//), pkg), result);

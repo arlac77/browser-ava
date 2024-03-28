@@ -31,8 +31,8 @@ export function resolveExports(parts, pkg) {
       case "string":
         return value;
       case "object":
-        if(value['.']) {
-          return matchingCondition(value['.']);
+        if (value["."]) {
+          return matchingCondition(value["."]);
         }
         for (const condition of exportsConditionOrder) {
           if (value[condition]) {
@@ -50,6 +50,10 @@ export function resolveExports(parts, pkg) {
         return matchingCondition(pkg.exports["./" + parts.slice(1).join("/")]);
     }
   }
+
+  /*if(parts.join('/') === pkg.name) {
+    return matchingCondition(pkg.exports) || pkg.main || "index.js";
+  }*/
 }
 
 export function resolveImports(name, pkg) {
@@ -100,13 +104,19 @@ export async function resolveImport(name, base) {
   if (name.match(/^[\/\.]/)) {
     return resolve(dirname(base), name);
   }
-  let { pkg, path } = await findPackage(base);
 
   let parts = name.split(/\//);
 
   if (parts[0][0] === "@") {
+    const i = base.indexOf(parts[0]);
+    if (i > 0) {
+      base = base.substring(0, i);
+    }
+
     parts = [parts[0] + "/" + parts[1], ...parts.slice(2)];
   }
+
+  let { pkg, path } = await findPackage(base);
 
   const e = resolveExports(parts, pkg) || resolveImports(name, pkg);
 
