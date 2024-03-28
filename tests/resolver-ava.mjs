@@ -57,6 +57,16 @@ test(
   "./src/f.mjs"
 );
 
+test(
+  rest,
+  "@a/b",
+  {
+    name: "@a/b",
+    exports: "./src/f.mjs"
+  },
+  "./src/f.mjs"
+);
+
 function rist(t, module, pkg, result) {
   t.is(resolveImports(module, pkg), result);
 }
