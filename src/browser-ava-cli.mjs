@@ -12,7 +12,7 @@ import { calculateSummary, summaryMessages } from "./browser/util.mjs";
 import { resolveImport, utf8EncodingOptions } from "./resolver.mjs";
 import { globby } from "globby";
 import chalk from "chalk";
-import pkg from "../package.json" assert { type: "json" };
+import pkg from "../package.json" with { type: "json" };
 
 const knownBrowsers = {
   chrome: chromium,
