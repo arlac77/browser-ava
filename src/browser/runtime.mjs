@@ -354,6 +354,13 @@ function testContext(def, parentContext) {
         title
       });
     },
+    like(a, b, title) {
+      def.assertions.push({
+        passed: isEqual(a, b), // todo
+        message: `${a} != ${b}`,
+        title
+      });
+    },
 
     regex(contents, regex, message) {
       def.assertions.push({
