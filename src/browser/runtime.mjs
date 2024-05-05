@@ -137,6 +137,7 @@ async function execHooks(hooks, t) {
 }
 
 async function runTest(parent, tm, test) {
+  test.meta.file = tm;
   if (!test.skip && !test.todo) {
     const t = testContext(test, parent);
 

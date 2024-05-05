@@ -40,6 +40,7 @@ test("test.resolv", t => {
 
 test("test.kitchensink", t => {
   t.log("1st. assertion is coming soon");
+  t.log('Test file currently being run:', test.meta.file);
   t.is(1, 1);
   t.not(1, 2);
 

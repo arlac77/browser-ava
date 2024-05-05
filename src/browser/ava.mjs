@@ -22,6 +22,8 @@ export default function test(body, ...args) {
   return def;
 }
 
+test.meta = {};
+
 test.failing = (...args) => {
   test(...args).failing = true;
 };
