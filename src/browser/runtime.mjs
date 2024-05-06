@@ -1,4 +1,4 @@
-import { testModules } from "./ava.mjs";
+import { testModules, test } from "./ava.mjs";
 import {
   calculateSummary,
   summaryMessages,
@@ -10,8 +10,12 @@ import { isEqual } from "./eql.mjs";
 let ws = new WebSocket(`ws://${location.host}`);
 ws.onerror = console.error;
 
-BigInt.prototype.toJSON = function() { return this.toString() };
-Error.prototype.toJSON = function() { return this.toString() };
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
+Error.prototype.toJSON = function () {
+  return this.toString();
+};
 
 /*
  forward console info,log,error to the server
@@ -136,10 +140,11 @@ async function execHooks(hooks, t) {
   }
 }
 
-async function runTest(parent, tm, test) {
-  test.meta.file = tm;
-  if (!test.skip && !test.todo) {
-    const t = testContext(test, parent);
+async function runTest(parent, tm, testInstance) {
+   test.meta.file = tm.file;
+
+  if (!testInstance.skip && !testInstance.todo) {
+    const t = testContext(testInstance, parent);
 
     try {
       await execHooks(tm.beforeEach, t);
@@ -151,7 +156,7 @@ async function runTest(parent, tm, test) {
         }, t.ms);
       }
 
-      await test.body(t, ...test.args);
+      await testInstance.body(t, ...testInstance.args);
 
       if (t.timer) {
         clearTimeout(t.timer);
@@ -164,24 +169,27 @@ async function runTest(parent, tm, test) {
 
       await execHooks(tm.afterEach, t);
 
-      if (test.assertions.length === 0) {
-        test.passed = false;
-        test.message = "Test finished without running any assertions";
+      if (testInstance.assertions.length === 0) {
+        testInstance.passed = false;
+        testInstance.message = "Test finished without running any assertions";
       } else {
-        test.passed = !test.assertions.find(
+        testInstance.passed = !testInstance.assertions.find(
           a => a.passed !== true && !a.skipped
         );
 
-        if (t.planned !== undefined && t.planned !== test.assertions.length) {
-          test.passed = false;
-          test.message = `Planned for ${t.planned} assertions, but got ${test.assertions.length}`;
+        if (
+          t.planned !== undefined &&
+          t.planned !== testInstance.assertions.length
+        ) {
+          testInstance.passed = false;
+          testInstance.message = `Planned for ${t.planned} assertions, but got ${testInstance.assertions.length}`;
         }
       }
     } catch (e) {
-      test.passed = false;
-      test.message = e;
+      testInstance.passed = false;
+      testInstance.message = e;
     } finally {
-      ws.send(JSON.stringify({ action: "update", data: test }));
+      ws.send(JSON.stringify({ action: "update", data: testInstance }));
     }
   }
 }

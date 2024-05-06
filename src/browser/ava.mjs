@@ -6,7 +6,7 @@ export const testModules = [];
 /**
  * Collect all tests into testModules
  */
-export default function test(body, ...args) {
+export function test(body, ...args) {
   let title;
   if (typeof body === "string") {
     title = body;
@@ -21,6 +21,8 @@ export default function test(body, ...args) {
   testModules.at(-1).tests.push(def);
   return def;
 }
+
+export default test;
 
 test.meta = {};
 
