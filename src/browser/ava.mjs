@@ -86,6 +86,6 @@ test.afterEach = (...args) => {
   testModules.at(-1).afterEach.push(def);
   return def;
 };
-test.afterEach.always = () => {
+test.afterEach.always = (...args) => {
   test.afterEach(...args).always = true;
 };
