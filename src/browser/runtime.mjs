@@ -141,7 +141,7 @@ async function execHooks(hooks, t) {
 }
 
 async function runTest(parent, tm, testInstance) {
-   test.meta.file = tm.file;
+  test.meta.file = tm.file;
 
   if (!testInstance.skip && !testInstance.todo) {
     const t = testContext(testInstance, parent);
