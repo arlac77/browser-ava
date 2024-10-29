@@ -10,9 +10,6 @@ import { isEqual } from "./eql.mjs";
 let ws = new WebSocket(`ws://${location.host}`);
 ws.onerror = console.error;
 
-ArrayBuffer.prototype.toJSON = function () {
-  return this.toString();
-};
 BigInt.prototype.toJSON = function () {
   return this.toString();
 };
