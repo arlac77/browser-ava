@@ -40,7 +40,7 @@ test("test.resolv", t => {
 
 test("test.kitchensink", t => {
   t.log("1st. assertion is coming soon");
-  t.log('Test file currently being run:', test.meta.file);
+  t.log("Test file currently being run:", test.meta.file);
   t.is(1, 1);
   t.not(1, 2);
 
@@ -57,7 +57,8 @@ test("test.kitchensink", t => {
         bigInt: 9007199254740991n,
         symbol: sym,
         map: new Map([["k", "v"]]),
-        set: new Set(["k"])
+        set: new Set(["k"]),
+        typedArray: new Uint8Array([1, 2])
       }
     ],
     [
@@ -71,7 +72,8 @@ test("test.kitchensink", t => {
         bigInt: 9007199254740991n,
         symbol: sym,
         map: new Map([["k", "v"]]),
-        set: new Set(["k"])
+        set: new Set(["k"]),
+        typedArray: new Uint8Array([1, 2])
       }
     ]
   );
