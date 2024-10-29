@@ -2,10 +2,9 @@ import { join, dirname, resolve } from "node:path";
 import { readFile } from "node:fs/promises";
 
 /**
- * @type {Object}
- * @property {BufferEncoding} encoding
+ * @type {BufferEncoding} encoding
  */
-export const utf8EncodingOptions = { encoding: "utf8" };
+export const utf8EncodingOptions = "utf8" ;
 
 /**
  * Order in which imports are searched
