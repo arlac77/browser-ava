@@ -5,17 +5,16 @@ import {
   pluralize,
   moduleName
 } from "./util.mjs";
-import { isEqual } from "./eql.mjs";
+import { isEqual } from "./assertions.mjs";
 
 let ws = new WebSocket(`ws://${location.host}`);
 ws.onerror = console.error;
 
-BigInt.prototype.toJSON = function () {
+function primitiveRoString() {
   return this.toString();
-};
-Error.prototype.toJSON = function () {
-  return this.toString();
-};
+}
+BigInt.prototype.toJSON = primitiveRoString;
+Error.prototype.toJSON = primitiveRoString;
 
 /*
  forward console info,log,error to the server

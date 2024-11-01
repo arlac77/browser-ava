@@ -1,5 +1,5 @@
 import test from "ava";
-import { isEqual } from "../src/browser/eql.mjs";
+import { isEqual } from "../src/browser/assertions.mjs";
 
 function eq(t, a, b) {
   t.true(isEqual(a, b));
