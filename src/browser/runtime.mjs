@@ -16,6 +16,17 @@ function primitiveRoString() {
 BigInt.prototype.toJSON = primitiveRoString;
 Error.prototype.toJSON = primitiveRoString;
 
+function allErrorProperties(key, value) {
+  if (value instanceof Error) {
+      const error = {};
+      Object.
+        getOwnPropertyNames(value).
+        forEach((key) => error[key] = value[key]);
+      return error;
+  }
+  return value;
+}
+
 /*
  forward console info,log,error to the server
  */
@@ -24,7 +35,7 @@ for (const action of ["log", "info", "error"]) {
 
   console[action] = (...data) => {
     if (ws) {
-      ws.send(JSON.stringify({ action, data }));
+      ws.send(JSON.stringify({ action, data }, allErrorProperties));
     }
     former(...data);
   };
@@ -189,7 +200,7 @@ async function runTest(parent, tm, testInstance) {
       testInstance.message = e;
       testInstance.stack = e.stack;
     } finally {
-      ws.send(JSON.stringify({ action: "update", data: testInstance }));
+      ws.send(JSON.stringify({ action: "update", data: testInstance }, allErrorProperties));
     }
   }
 }
@@ -231,7 +242,7 @@ async function runTestModule(tm) {
 async function runTestModules() {
   await Promise.all(testModules.map(tm => runTestModule(tm)));
 
-  ws.send(JSON.stringify({ action: "result", data: testModules }));
+  ws.send(JSON.stringify({ action: "result", data: testModules }, allErrorProperties));
 
   displayTests();
 }
