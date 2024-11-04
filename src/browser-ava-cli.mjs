@@ -134,6 +134,12 @@ program
                   console.log(" ", chalk.green("✔"), data.title);
                 } else {
                   console.log(" ", chalk.red("✘ [fail]: "), data.title);
+                  if(data.message) {
+                    console.log("   ", data.message);
+                    if(data.stack) {
+                      console.log("   ", data.stack);
+                    }
+                  }
                 }
               }
             }

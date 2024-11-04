@@ -19,14 +19,14 @@ Error.prototype.toJSON = primitiveRoString;
 /*
  forward console info,log,error to the server
  */
-for (const slot of ["log", "info", "error"]) {
-  const former = console[slot];
+for (const action of ["log", "info", "error"]) {
+  const former = console[action];
 
-  console[slot] = (...args) => {
+  console[action] = (...data) => {
     if (ws) {
-      ws.send(JSON.stringify({ action: slot, data: args }));
+      ws.send(JSON.stringify({ action, data }));
     }
-    former(...args);
+    former(...data);
   };
 }
 
@@ -85,7 +85,7 @@ async function displayTests() {
             .map(a => (a.title || "") + " " + (a.message || ""))
             .join(" ")
         : ""
-    }</span>${t.message ? t.message : ""}</li>`;
+    }</span>${t.message ? t.message : ""}${t.stack ? "<br>" + t.stack : ""}</li>`;
   }
 
   function renderModule(tm) {
@@ -187,6 +187,7 @@ async function runTest(parent, tm, testInstance) {
     } catch (e) {
       testInstance.passed = false;
       testInstance.message = e;
+      testInstance.stack = e.stack;
     } finally {
       ws.send(JSON.stringify({ action: "update", data: testInstance }));
     }
