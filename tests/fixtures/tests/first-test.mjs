@@ -78,6 +78,12 @@ test("test.kitchensink", t => {
     ]
   );
   t.notDeepEqual([1, { a: 1 }], [1, { a: 2 }]);
+
+  const data = new ArrayBuffer(0, { maxByteLength: 2 });
+  const array1 = new Uint8Array(data);
+  const array2 = new Uint8Array(data);
+
+  t.not(array1, array2);
   t.regex("foo", /o/);
   t.notRegex("foo", /bar/);
 });
