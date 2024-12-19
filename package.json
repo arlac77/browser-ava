@@ -21,7 +21,7 @@
       "email": "markus.felten@gmx.de"
     }
   ],
-  "license": "BSD-2-Clause",
+  "license": "0BSD",
   "bin": {
     "browser-ava": "src/browser-ava-cli.mjs"
   },
