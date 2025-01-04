@@ -35,24 +35,15 @@ browser-ava --webkit --chromium --firefox tests/*.mjs
 
 ### Table of Contents
 
-*   [testModules](#testmodules)
-*   [test](#test)
-    *   [Parameters](#parameters)
 *   [pluralize](#pluralize)
+    *   [Parameters](#parameters)
+*   [utf8EncodingOptions](#utf8encodingoptions)
+*   [importsConditionOrder](#importsconditionorder)
+*   [exportsConditionOrder](#exportsconditionorder)
+*   [resolveExports](#resolveexports)
     *   [Parameters](#parameters-1)
-
-## testModules
-
-Holds all tests
-
-## test
-
-Collect all tests into testModules
-
-### Parameters
-
-*   `body` &#x20;
-*   `args` **...any**&#x20;
+*   [resolveImport](#resolveimport)
+    *   [Parameters](#parameters-2)
 
 ## pluralize
 
@@ -64,3 +55,41 @@ Pluralize subjects
 *   `number` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** if > 1 pluralize otherwize keep subject alone
 
 Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** pluralized subject if number > 1
+
+## utf8EncodingOptions
+
+Type: BufferEncoding
+
+## importsConditionOrder
+
+*   **See**: {<https://nodejs.org/dist/latest/docs/api/packages.html#imports}>
+
+Order in which imports are searched
+
+## exportsConditionOrder
+
+*   **See**: {<https://nodejs.org/dist/latest/docs/api/packages.html#exports}>
+
+Order in which exports are searched
+
+## resolveExports
+
+Find module inside a package.
+
+### Parameters
+
+*   `parts` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>**&#x20;
+*   `pkg` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** decoded package.json content
+
+Returns **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))** module file name relative to package
+
+## resolveImport
+
+Maps import url from node to browser view.
+
+### Parameters
+
+*   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** module to resolve
+*   `base` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** where to start resolving
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** resolved import url
