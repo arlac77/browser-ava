@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 /**
  * @type {BufferEncoding} encoding
  */
-export const utf8EncodingOptions = "utf8" ;
+export const utf8EncodingOptions = "utf8";
 
 /**
  * Order in which imports are searched
@@ -16,7 +16,14 @@ const importsConditionOrder = ["browser", "default"];
  * Order in which exports are searched
  * @see {https://nodejs.org/dist/latest/docs/api/packages.html#exports}
  */
-const exportsConditionOrder = ["browser", "module", "module-sync", "import", ".", "default"];
+const exportsConditionOrder = [
+  "browser",
+  "module",
+  "module-sync",
+  "import",
+  ".",
+  "default"
+];
 
 /**
  * Find module inside a package.
