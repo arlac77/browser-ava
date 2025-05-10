@@ -21,6 +21,13 @@ export function isEqual(a, b) {
   }
 
   if (typeof a === "object") {
+
+    if(a instanceof ArrayBuffer) {
+      if(b instanceof ArrayBuffer) {
+         return a.byteLength === b.byteLength;
+      }
+    }
+
     if (a instanceof Set) {
       return (
         b instanceof Set &&

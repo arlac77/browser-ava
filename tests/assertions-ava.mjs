@@ -37,6 +37,12 @@ test(
   new Uint8Array([1, 2, 3]),
   new Uint8Array([1, 2, 3])
 );
+test.only(
+  "ArrayBuffer<>ArrayBuffer",
+  neq,
+  new ArrayBuffer(5),
+  new ArrayBuffer(7)
+);
 
 test(eq, new Date(), new Date());
 test(eq, console.log, console.log);
