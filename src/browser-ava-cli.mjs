@@ -117,7 +117,7 @@ program
           case "error":
             errors++;
             console.error(...data);
-            await shutdown(undefined, false);
+            await shutdown(true, false);
             break;
 
           case "ready":

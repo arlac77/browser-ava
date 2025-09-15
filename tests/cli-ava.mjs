@@ -43,7 +43,7 @@ test("cli mixed result", async t => {
 
 test("cli invalid test", async t => {
   try {
-    const p = await execa(
+    await execa(
       "node",
       [
         new URL("../src/browser-ava-cli.mjs", import.meta.url).pathname,
@@ -56,8 +56,9 @@ test("cli invalid test", async t => {
       ],
       { all: true }
     );
+    t.fail();
   } catch (p) {
-    t.is(p.exitCode, 2);
+    t.is(p.exitCode, 1);
     t.regex(p.all, /TypeError/);
   }
 });
