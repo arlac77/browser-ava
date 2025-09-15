@@ -104,7 +104,7 @@ async function findPackage(path) {
  * Maps import url from node to browser view.
  * @param {string} name module to resolve
  * @param {string} base where to start resolving
- * @returns {Promise<string>} resolved import url
+ * @returns {Promise<string|undefined>} resolved import url
  */
 export async function resolveImport(name, base) {
   if (name.match(/^[\/\.]/)) {
