@@ -240,7 +240,12 @@ async function runTestModule(tm) {
 }
 
 async function runTestModules() {
-  await Promise.all(testModules.map(tm => runTestModule(tm)));
+  try {
+    await Promise.all(testModules.map(tm => runTestModule(tm)));
+  }
+  catch(error) {
+    console.error(error);
+  }
 
   ws.send(JSON.stringify({ action: "result", data: testModules }, allErrorProperties));
 
