@@ -15,7 +15,7 @@ function _isEqual(a, b, seen) {
   }
 
   if(seen.has(a)) {
-    return false;
+    return true;
   }
 
   seen.add(a);
