@@ -18,11 +18,9 @@ Error.prototype.toJSON = primitiveRoString;
 
 function allErrorProperties(key, value) {
   if (value instanceof Error) {
-      const error = {};
-      Object.
-        getOwnPropertyNames(value).
-        forEach((key) => error[key] = value[key]);
-      return error;
+    const error = {};
+    Object.getOwnPropertyNames(value).forEach(key => (error[key] = value[key]));
+    return error;
   }
   return value;
 }
@@ -96,7 +94,9 @@ async function displayTests() {
             .map(a => (a.title || "") + " " + (a.message || ""))
             .join(" ")
         : ""
-    }</span>${t.message ? t.message : ""}${t.stack ? "<br>" + t.stack : ""}</li>`;
+    }</span>${t.message ? t.message : ""}${
+      t.stack ? "<br>" + t.stack : ""
+    }</li>`;
   }
 
   function renderModule(tm) {
@@ -200,7 +200,12 @@ async function runTest(parent, tm, testInstance) {
       testInstance.message = e;
       testInstance.stack = e.stack;
     } finally {
-      ws.send(JSON.stringify({ action: "update", data: testInstance }, allErrorProperties));
+      ws.send(
+        JSON.stringify(
+          { action: "update", data: testInstance },
+          allErrorProperties
+        )
+      );
     }
   }
 }
@@ -240,14 +245,21 @@ async function runTestModule(tm) {
 }
 
 async function runTestModules() {
-  try {
-    await Promise.all(testModules.map(tm => runTestModule(tm)));
-  }
-  catch(error) {
-    console.error(error);
+  const results = await Promise.allSettled(
+    testModules.map(tm => runTestModule(tm))
+  );
+
+  let i = 0;
+  for (const result of results) {
+    if (result.status !== "fulfilled") {
+      console.error(testModules[i].url, result.reason);
+      i++;
+    }
   }
 
-  ws.send(JSON.stringify({ action: "result", data: testModules }, allErrorProperties));
+  ws.send(
+    JSON.stringify({ action: "result", data: testModules }, allErrorProperties)
+  );
 
   displayTests();
 }
