@@ -1,4 +1,4 @@
-import { decycle } from "./json-cyclic.mjs";
+import { decycle } from "./cycle.mjs";
 import { testModules, test } from "./ava.mjs";
 import {
   calculateSummary,

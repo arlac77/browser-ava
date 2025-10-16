@@ -9,10 +9,10 @@ import Cors from "@koa/cors";
 import { WebSocketServer } from "ws";
 import { program, Option } from "commander";
 import { calculateSummary, summaryMessages } from "./browser/util.mjs";
+import { retrocycle } from "./browser/cycle.mjs";
 import { resolveImport, utf8EncodingOptions } from "./resolver.mjs";
 import { globby } from "globby";
 import chalk from "chalk";
-import { encycle } from "json-cyclic";
 import pkg from "../package.json" with { type: "json" };
 
 const knownBrowsers = {
@@ -107,7 +107,7 @@ program
 
     wss.on("connection", ws => {
       ws.on("message", async content => {
-        const { action, data } = encycle(JSON.parse(content));
+        const { action, data } = retrocycle(JSON.parse(content));
         switch (action) {
           case "info":
             console.info(...data);
