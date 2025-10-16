@@ -227,7 +227,6 @@ async function createServer(tests, options) {
   app.use(Cors({ origin: "*" }));
 
   app.use(Static(new URL("./browser", import.meta.url).pathname));
-  app.use(Static(new URL("..", import.meta.url).pathname));
 
   app.on("error", console.error);
 

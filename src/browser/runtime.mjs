@@ -1,4 +1,4 @@
-import { decycle } from "./node_modules/json-cyclic/dist/index.esm.js";
+import { decycle } from "./json-cyclic.mjs";
 import { testModules, test } from "./ava.mjs";
 import {
   calculateSummary,
@@ -8,7 +8,7 @@ import {
 } from "./util.mjs";
 import { isEqual } from "./assertions.mjs";
 
-let ws = new WebSocket(`ws://${location.host}`);
+const ws = new WebSocket(`ws://${location.host}`);
 ws.onerror = console.error;
 
 function primitiveRoString() {
