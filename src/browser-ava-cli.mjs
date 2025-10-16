@@ -12,6 +12,7 @@ import { calculateSummary, summaryMessages } from "./browser/util.mjs";
 import { resolveImport, utf8EncodingOptions } from "./resolver.mjs";
 import { globby } from "globby";
 import chalk from "chalk";
+import { encycle } from "json-cyclic";
 import pkg from "../package.json" with { type: "json" };
 
 const knownBrowsers = {
@@ -106,7 +107,7 @@ program
 
     wss.on("connection", ws => {
       ws.on("message", async content => {
-        const { action, data } = JSON.parse(content);
+        const { action, data } = encycle(JSON.parse(content));
         switch (action) {
           case "info":
             console.info(...data);
@@ -226,6 +227,7 @@ async function createServer(tests, options) {
   app.use(Cors({ origin: "*" }));
 
   app.use(Static(new URL("./browser", import.meta.url).pathname));
+  app.use(Static(new URL("..", import.meta.url).pathname));
 
   app.on("error", console.error);
 

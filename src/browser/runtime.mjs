@@ -1,3 +1,4 @@
+import { decycle } from "./node_modules/json-cyclic/dist/index.esm.js";
 import { testModules, test } from "./ava.mjs";
 import {
   calculateSummary,
@@ -33,7 +34,7 @@ for (const action of ["log", "info", "error"]) {
 
   console[action] = (...data) => {
     if (ws) {
-      ws.send(JSON.stringify({ action, data }, allErrorProperties));
+      ws.send(JSON.stringify(decycle({ action, data }), allErrorProperties));
     }
     former(...data);
   };
@@ -202,7 +203,7 @@ async function runTest(parent, tm, testInstance) {
     } finally {
       ws.send(
         JSON.stringify(
-          { action: "update", data: testInstance },
+          decycle({ action: "update", data: testInstance }),
           allErrorProperties
         )
       );
@@ -258,7 +259,7 @@ async function runTestModules() {
   }
 
   ws.send(
-    JSON.stringify({ action: "result", data: testModules }, allErrorProperties)
+    JSON.stringify(decycle({ action: "result", data: testModules }), allErrorProperties)
   );
 
   displayTests();
