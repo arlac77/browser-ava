@@ -44,7 +44,7 @@
     "koa": "^3.1.1",
     "koa-static": "^5.0.0",
     "playwright": "^1.57.0",
-    "ws": "^8.18.3"
+    "ws": "^8.19.0"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
