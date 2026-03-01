@@ -41,13 +41,13 @@
     "commander": "^14.0.3",
     "es-module-lexer": "^2.0.0",
     "globby": "^16.1.1",
-    "koa": "^3.1.1",
+    "koa": "^3.1.2",
     "koa-static": "^5.0.0",
     "playwright": "^1.58.2",
     "ws": "^8.19.0"
   },
   "devDependencies": {
-    "@types/node": "^25.3.0",
+    "@types/node": "^25.3.2",
     "ava": "^7.0.0",
     "c8": "^11.0.0",
     "documentation": "^14.0.3",
