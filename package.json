@@ -43,7 +43,7 @@
     "globby": "^16.2.0",
     "koa": "^3.2.0",
     "koa-static": "^5.0.0",
-    "playwright": "^1.58.2",
+    "playwright": "^1.59.1",
     "ws": "^8.20.0"
   },
   "devDependencies": {
