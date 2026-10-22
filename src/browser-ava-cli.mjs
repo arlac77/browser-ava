@@ -1,7 +1,7 @@
 #!/usr/bin/env -S node --no-warnings --title browser-ava
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { init, parse } from "es-module-lexer";
+import { init, parse } from "es-module-lexer/minimal";
 import { chromium, firefox, webkit } from "playwright";
 import Koa from "koa";
 import Static from "koa-static";
